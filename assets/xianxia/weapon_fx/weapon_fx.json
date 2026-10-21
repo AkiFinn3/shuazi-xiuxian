@@ -1,0 +1,2106 @@
+{
+ "wp_xianxia_evo_chanzhang_01_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.0,
+   "frac_within_blade_span": 0.995
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    125.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    34.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 1,
+  "evo_weapon": "chanzhang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 2,
+   "motes": 10,
+   "pulse": 1.2
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 1.2,
+  "label": "禪杖 覺醒",
+  "loop": true,
+  "loop_seam": 0.52,
+  "loop_wrap_diff_px": 0,
+  "motion": 2.57,
+  "offset": [
+   0,
+   -17
+  ],
+  "palette": [
+   "#a04c12",
+   "#e89428",
+   "#ffc65a",
+   "#ffecb2"
+  ],
+  "palette_name": "holy_buddha",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_chanzhang_01_fx.png",
+  "w": 198,
+  "weapon": "wp_xianxia_evo_chanzhang_01.png",
+  "weapon_h": 77,
+  "weapon_w": 193
+ },
+ "wp_xianxia_evo_chanzhang_02_fx": {
+  "align": {
+   "dist_median": 2.24,
+   "dist_p90": 5.0,
+   "frac_within_blade_span": 0.986
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    125.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    34.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 2,
+  "evo_weapon": "chanzhang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 2,
+   "motes": 13,
+   "pulse": 1.68
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 1.68,
+  "label": "禪杖 解放",
+  "loop": true,
+  "loop_seam": 0.52,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.15,
+  "offset": [
+   0,
+   -17
+  ],
+  "palette": [
+   "#a04c12",
+   "#e89428",
+   "#ffc65a",
+   "#ffecb2"
+  ],
+  "palette_name": "holy_buddha",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_chanzhang_02_fx.png",
+  "w": 198,
+  "weapon": "wp_xianxia_evo_chanzhang_02.png",
+  "weapon_h": 77,
+  "weapon_w": 193
+ },
+ "wp_xianxia_evo_chanzhang_03_fx": {
+  "align": {
+   "dist_median": 2.83,
+   "dist_p90": 5.39,
+   "frac_within_blade_span": 0.933
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    125.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    189
+   ],
+   "tip_end": [
+    189.5,
+    34.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 3,
+  "evo_weapon": "chanzhang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 2,
+   "motes": 17,
+   "pulse": 2.16
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 2.16,
+  "label": "禪杖 終極",
+  "loop": true,
+  "loop_seam": 0.45,
+  "loop_wrap_diff_px": 0,
+  "motion": 4.23,
+  "offset": [
+   0,
+   -17
+  ],
+  "palette": [
+   "#a04c12",
+   "#e89428",
+   "#ffc65a",
+   "#ffecb2"
+  ],
+  "palette_name": "holy_buddha",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_chanzhang_03_fx.png",
+  "w": 198,
+  "weapon": "wp_xianxia_evo_chanzhang_03.png",
+  "weapon_h": 77,
+  "weapon_w": 193
+ },
+ "wp_xianxia_evo_dao_01_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.24,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    42.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    42,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    34.5
+   ]
+  },
+  "element": "flame",
+  "evo_stage": 1,
+  "evo_weapon": "dao",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "burst": 0,
+   "drift": 3,
+   "flicker": 0.15,
+   "height": 1.2,
+   "swing": 1.6,
+   "taper": 8,
+   "tfreq": 2
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 1.0,
+  "label": "大刀 覺醒",
+  "loop": true,
+  "loop_seam": 1.01,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.45,
+  "offset": [
+   0,
+   -23
+  ],
+  "palette": [
+   "#700e20",
+   "#c42224",
+   "#f8702c",
+   "#ffd678"
+  ],
+  "palette_name": "flame_crimson",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_dao_01_fx.png",
+  "w": 136,
+  "weapon": "wp_xianxia_evo_dao_01.png",
+  "weapon_h": 67,
+  "weapon_w": 136
+ },
+ "wp_xianxia_evo_dao_02_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 5.83,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    42.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    42,
+    132
+   ],
+   "tip_end": [
+    132.5,
+    34.5
+   ]
+  },
+  "element": "flame",
+  "evo_stage": 2,
+  "evo_weapon": "dao",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "burst": 4,
+   "drift": 3,
+   "flicker": 0.182,
+   "height": 1.68,
+   "swing": 2.24,
+   "taper": 8,
+   "tfreq": 2
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 1.4,
+  "label": "大刀 解放",
+  "loop": true,
+  "loop_seam": 0.88,
+  "loop_wrap_diff_px": 0,
+  "motion": 6.6,
+  "offset": [
+   0,
+   -23
+  ],
+  "palette": [
+   "#700e20",
+   "#c42224",
+   "#f8702c",
+   "#ffd678"
+  ],
+  "palette_name": "flame_crimson",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_dao_02_fx.png",
+  "w": 136,
+  "weapon": "wp_xianxia_evo_dao_02.png",
+  "weapon_h": 67,
+  "weapon_w": 136
+ },
+ "wp_xianxia_evo_dao_03_fx": {
+  "align": {
+   "dist_median": 2.24,
+   "dist_p90": 6.4,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    42.5,
+    34.5
+   ],
+   "center": [
+    0.5,
+    34.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    42,
+    134
+   ],
+   "tip_end": [
+    134.5,
+    34.5
+   ]
+  },
+  "element": "flame",
+  "evo_stage": 3,
+  "evo_weapon": "dao",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "burst": 8,
+   "drift": 4,
+   "flicker": 0.214,
+   "height": 2.16,
+   "swing": 2.88,
+   "taper": 8,
+   "tfreq": 3
+  },
+  "grip": [
+   0,
+   34
+  ],
+  "h": 101,
+  "hard_alpha": true,
+  "intensity": 1.8,
+  "label": "大刀 終極",
+  "loop": true,
+  "loop_seam": 0.97,
+  "loop_wrap_diff_px": 0,
+  "motion": 11.93,
+  "offset": [
+   0,
+   -23
+  ],
+  "palette": [
+   "#700e20",
+   "#c42224",
+   "#f8702c",
+   "#ffd678"
+  ],
+  "palette_name": "flame_crimson",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_dao_03_fx.png",
+  "w": 136,
+  "weapon": "wp_xianxia_evo_dao_03.png",
+  "weapon_h": 67,
+  "weapon_w": 136
+ },
+ "wp_xianxia_evo_fuchen_01_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.61,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.35,
+   "axis_deg_forced": null,
+   "blade_base": [
+    0.9,
+    40.6
+   ],
+   "center": [
+    82.9,
+    40.1
+   ],
+   "dir": [
+    1.0,
+    -0.0061
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -82,
+    45
+   ],
+   "tip_end": [
+    127.9,
+    39.8
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 1,
+  "evo_weapon": "fuchen",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 1,
+   "motes": 8,
+   "pulse": 1.0
+  },
+  "grip": [
+   0,
+   17
+  ],
+  "h": 136,
+  "hard_alpha": true,
+  "intensity": 1.0,
+  "label": "拂塵 覺醒",
+  "loop": true,
+  "loop_seam": 0.22,
+  "loop_wrap_diff_px": 0,
+  "motion": 5.65,
+  "offset": [
+   -6,
+   -14
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_fuchen_01_fx.png",
+  "w": 143,
+  "weapon": "wp_xianxia_evo_fuchen_01.png",
+  "weapon_h": 117,
+  "weapon_w": 131
+ },
+ "wp_xianxia_evo_fuchen_02_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.0,
+   "frac_within_blade_span": 0.996
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -72.83,
+   "axis_deg_forced": null,
+   "blade_base": [
+    66.7,
+    -7.3
+   ],
+   "center": [
+    85.6,
+    53.8
+   ],
+   "dir": [
+    0.2953,
+    0.9554
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -64,
+    63
+   ],
+   "tip_end": [
+    104.2,
+    114.0
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 2,
+  "evo_weapon": "fuchen",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 1,
+   "motes": 11,
+   "pulse": 1.4
+  },
+  "grip": [
+   0,
+   17
+  ],
+  "h": 136,
+  "hard_alpha": true,
+  "intensity": 1.4,
+  "label": "拂塵 解放",
+  "loop": true,
+  "loop_seam": 0.16,
+  "loop_wrap_diff_px": 0,
+  "motion": 6.64,
+  "offset": [
+   -6,
+   -14
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_fuchen_02_fx.png",
+  "w": 143,
+  "weapon": "wp_xianxia_evo_fuchen_02.png",
+  "weapon_h": 117,
+  "weapon_w": 131
+ },
+ "wp_xianxia_evo_fuchen_03_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.47,
+   "frac_within_blade_span": 0.994
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -68.58,
+   "axis_deg_forced": null,
+   "blade_base": [
+    61.9,
+    -8.8
+   ],
+   "center": [
+    85.7,
+    51.7
+   ],
+   "dir": [
+    0.3652,
+    0.9309
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -65,
+    66
+   ],
+   "tip_end": [
+    109.8,
+    113.2
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 3,
+  "evo_weapon": "fuchen",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 2,
+   "motes": 14,
+   "pulse": 1.8
+  },
+  "grip": [
+   0,
+   17
+  ],
+  "h": 136,
+  "hard_alpha": true,
+  "intensity": 1.8,
+  "label": "拂塵 終極",
+  "loop": true,
+  "loop_seam": 0.49,
+  "loop_wrap_diff_px": 0,
+  "motion": 8.17,
+  "offset": [
+   -6,
+   -14
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_fuchen_03_fx.png",
+  "w": 143,
+  "weapon": "wp_xianxia_evo_fuchen_03.png",
+  "weapon_h": 117,
+  "weapon_w": 131
+ },
+ "wp_xianxia_evo_ji_01_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.61,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    126.5,
+    27.5
+   ],
+   "center": [
+    1.5,
+    27.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    191
+   ],
+   "tip_end": [
+    192.5,
+    27.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 1,
+  "evo_weapon": "ji",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 1,
+   "motes": 8,
+   "pulse": 1.0
+  },
+  "grip": [
+   1,
+   27
+  ],
+  "h": 78,
+  "hard_alpha": true,
+  "intensity": 1.0,
+  "label": "方天畫戟 覺醒",
+  "loop": true,
+  "loop_seam": 0.24,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.45,
+  "offset": [
+   0,
+   -16
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_ji_01_fx.png",
+  "w": 201,
+  "weapon": "wp_xianxia_evo_ji_01.png",
+  "weapon_h": 57,
+  "weapon_w": 195
+ },
+ "wp_xianxia_evo_ji_02_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.0,
+   "frac_within_blade_span": 0.996
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    126.5,
+    27.5
+   ],
+   "center": [
+    1.5,
+    27.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    193
+   ],
+   "tip_end": [
+    194.5,
+    27.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 2,
+  "evo_weapon": "ji",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 1,
+   "motes": 11,
+   "pulse": 1.4
+  },
+  "grip": [
+   1,
+   27
+  ],
+  "h": 78,
+  "hard_alpha": true,
+  "intensity": 1.4,
+  "label": "方天畫戟 解放",
+  "loop": true,
+  "loop_seam": 0.22,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.85,
+  "offset": [
+   0,
+   -16
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_ji_02_fx.png",
+  "w": 201,
+  "weapon": "wp_xianxia_evo_ji_02.png",
+  "weapon_h": 57,
+  "weapon_w": 195
+ },
+ "wp_xianxia_evo_ji_03_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 4.47,
+   "frac_within_blade_span": 0.989
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    126.5,
+    27.5
+   ],
+   "center": [
+    1.5,
+    27.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    192
+   ],
+   "tip_end": [
+    193.5,
+    27.5
+   ]
+  },
+  "element": "holy",
+  "evo_stage": 3,
+  "evo_weapon": "ji",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "cycles": 2,
+   "motes": 14,
+   "pulse": 1.8
+  },
+  "grip": [
+   1,
+   27
+  ],
+  "h": 78,
+  "hard_alpha": true,
+  "intensity": 1.8,
+  "label": "方天畫戟 終極",
+  "loop": true,
+  "loop_seam": 0.41,
+  "loop_wrap_diff_px": 0,
+  "motion": 4.39,
+  "offset": [
+   0,
+   -16
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_ji_03_fx.png",
+  "w": 201,
+  "weapon": "wp_xianxia_evo_ji_03.png",
+  "weapon_h": 57,
+  "weapon_w": 195
+ },
+ "wp_xianxia_evo_jian_01_fx": {
+  "align": {
+   "dist_median": 4.0,
+   "dist_p90": 6.0,
+   "frac_within_blade_span": 0.987
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    44.5,
+    16.5
+   ],
+   "center": [
+    0.5,
+    16.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    44,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    16.5
+   ]
+  },
+  "element": "water",
+  "evo_stage": 1,
+  "evo_weapon": "jian",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "amp": 1.0,
+   "bands": 1,
+   "drops": 3
+  },
+  "grip": [
+   0,
+   16
+  ],
+  "h": 46,
+  "hard_alpha": true,
+  "intensity": 1.0,
+  "label": "長劍 覺醒",
+  "loop": true,
+  "loop_seam": 0.63,
+  "loop_wrap_diff_px": 0,
+  "motion": 8.39,
+  "offset": [
+   0,
+   -7
+  ],
+  "palette": [
+   "#126892",
+   "#24bade",
+   "#8ceafa",
+   "#d6faff"
+  ],
+  "palette_name": "water",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_jian_01_fx.png",
+  "w": 142,
+  "weapon": "wp_xianxia_evo_jian_01.png",
+  "weapon_h": 33,
+  "weapon_w": 129
+ },
+ "wp_xianxia_evo_jian_02_fx": {
+  "align": {
+   "dist_median": 2.83,
+   "dist_p90": 5.0,
+   "frac_within_blade_span": 0.981
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    44.5,
+    16.5
+   ],
+   "center": [
+    0.5,
+    16.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    44,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    16.5
+   ]
+  },
+  "element": "water",
+  "evo_stage": 2,
+  "evo_weapon": "jian",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "amp": 1.4,
+   "bands": 1,
+   "drops": 5
+  },
+  "grip": [
+   0,
+   16
+  ],
+  "h": 46,
+  "hard_alpha": true,
+  "intensity": 1.4,
+  "label": "長劍 解放",
+  "loop": true,
+  "loop_seam": 0.64,
+  "loop_wrap_diff_px": 0,
+  "motion": 11.81,
+  "offset": [
+   0,
+   -7
+  ],
+  "palette": [
+   "#126892",
+   "#24bade",
+   "#8ceafa",
+   "#d6faff"
+  ],
+  "palette_name": "water",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_jian_02_fx.png",
+  "w": 142,
+  "weapon": "wp_xianxia_evo_jian_02.png",
+  "weapon_h": 33,
+  "weapon_w": 129
+ },
+ "wp_xianxia_evo_jian_03_fx": {
+  "align": {
+   "dist_median": 3.0,
+   "dist_p90": 5.39,
+   "frac_within_blade_span": 0.978
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    44.5,
+    16.5
+   ],
+   "center": [
+    0.5,
+    16.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    44,
+    128
+   ],
+   "tip_end": [
+    128.5,
+    16.5
+   ]
+  },
+  "element": "water",
+  "evo_stage": 3,
+  "evo_weapon": "jian",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "amp": 1.8,
+   "bands": 2,
+   "drops": 7
+  },
+  "grip": [
+   0,
+   16
+  ],
+  "h": 46,
+  "hard_alpha": true,
+  "intensity": 1.8,
+  "label": "長劍 終極",
+  "loop": true,
+  "loop_seam": 0.82,
+  "loop_wrap_diff_px": 0,
+  "motion": 16.22,
+  "offset": [
+   0,
+   -7
+  ],
+  "palette": [
+   "#126892",
+   "#24bade",
+   "#8ceafa",
+   "#d6faff"
+  ],
+  "palette_name": "water",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_jian_03_fx.png",
+  "w": 142,
+  "weapon": "wp_xianxia_evo_jian_03.png",
+  "weapon_h": 33,
+  "weapon_w": 129
+ },
+ "wp_xianxia_evo_qiang_01_fx": {
+  "align": {
+   "dist_median": 4.0,
+   "dist_p90": 8.25,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    120.5,
+    32.5
+   ],
+   "center": [
+    0.5,
+    32.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    120,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    32.5
+   ]
+  },
+  "element": "lightning",
+  "evo_stage": 1,
+  "evo_weapon": "qiang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "arcs": 0,
+   "flashes": 2,
+   "reach": 1.0
+  },
+  "grip": [
+   0,
+   32
+  ],
+  "h": 96,
+  "hard_alpha": true,
+  "intensity": 1.0,
+  "label": "長槍 覺醒",
+  "loop": true,
+  "loop_seam": 1.1,
+  "loop_wrap_diff_px": 0,
+  "motion": 5.92,
+  "offset": [
+   0,
+   -10
+  ],
+  "palette": [
+   "#4a1e8c",
+   "#8a48de",
+   "#be96ff",
+   "#e8daff"
+  ],
+  "palette_name": "lightning",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_qiang_01_fx.png",
+  "w": 208,
+  "weapon": "wp_xianxia_evo_qiang_01.png",
+  "weapon_h": 72,
+  "weapon_w": 208
+ },
+ "wp_xianxia_evo_qiang_02_fx": {
+  "align": {
+   "dist_median": 4.12,
+   "dist_p90": 9.0,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    120.5,
+    32.5
+   ],
+   "center": [
+    0.5,
+    32.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    120,
+    194
+   ],
+   "tip_end": [
+    194.5,
+    32.5
+   ]
+  },
+  "element": "lightning",
+  "evo_stage": 2,
+  "evo_weapon": "qiang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "arcs": 1,
+   "flashes": 2,
+   "reach": 1.4
+  },
+  "grip": [
+   0,
+   32
+  ],
+  "h": 96,
+  "hard_alpha": true,
+  "intensity": 1.4,
+  "label": "長槍 解放",
+  "loop": true,
+  "loop_seam": 1.49,
+  "loop_wrap_diff_px": 0,
+  "motion": 7.85,
+  "offset": [
+   0,
+   -10
+  ],
+  "palette": [
+   "#4a1e8c",
+   "#8a48de",
+   "#be96ff",
+   "#e8daff"
+  ],
+  "palette_name": "lightning",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_qiang_02_fx.png",
+  "w": 208,
+  "weapon": "wp_xianxia_evo_qiang_02.png",
+  "weapon_h": 72,
+  "weapon_w": 208
+ },
+ "wp_xianxia_evo_qiang_03_fx": {
+  "align": {
+   "dist_median": 4.24,
+   "dist_p90": 10.44,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    120.5,
+    32.5
+   ],
+   "center": [
+    0.5,
+    32.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    120,
+    206
+   ],
+   "tip_end": [
+    206.5,
+    32.5
+   ]
+  },
+  "element": "lightning",
+  "evo_stage": 3,
+  "evo_weapon": "qiang",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "arcs": 2,
+   "flashes": 4,
+   "reach": 1.8
+  },
+  "grip": [
+   0,
+   32
+  ],
+  "h": 96,
+  "hard_alpha": true,
+  "intensity": 1.8,
+  "label": "長槍 終極",
+  "loop": true,
+  "loop_seam": 1.29,
+  "loop_wrap_diff_px": 0,
+  "motion": 11.74,
+  "offset": [
+   0,
+   -10
+  ],
+  "palette": [
+   "#4a1e8c",
+   "#8a48de",
+   "#be96ff",
+   "#e8daff"
+  ],
+  "palette_name": "lightning",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_evo_qiang_03_fx.png",
+  "w": 208,
+  "weapon": "wp_xianxia_evo_qiang_03.png",
+  "weapon_h": 72,
+  "weapon_w": 208
+ },
+ "wp_xianxia_tier3_a_00_fx": {
+  "align": {
+   "dist_median": 3.0,
+   "dist_p90": 5.0,
+   "frac_within_blade_span": 0.984
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    44.5,
+    14.5
+   ],
+   "center": [
+    0.5,
+    14.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    44,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    14.5
+   ]
+  },
+  "element": "water",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 33,
+  "hard_alpha": true,
+  "label": "長劍",
+  "loop": true,
+  "loop_seam": 0.65,
+  "loop_wrap_diff_px": 0,
+  "motion": 11.62,
+  "offset": [
+   0,
+   0
+  ],
+  "palette": [
+   "#126892",
+   "#24bade",
+   "#8ceafa",
+   "#d6faff"
+  ],
+  "palette_name": "water",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_00_fx.png",
+  "w": 140,
+  "weapon": "wp_xianxia_tier3_a_00.png",
+  "weapon_h": 29,
+  "weapon_w": 128
+ },
+ "wp_xianxia_tier3_a_01_fx": {
+  "align": {
+   "dist_median": 1.41,
+   "dist_p90": 3.0,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    36.5,
+    16.5
+   ],
+   "center": [
+    0.5,
+    16.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    36,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    16.5
+   ]
+  },
+  "element": "flame",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 52,
+  "hard_alpha": true,
+  "label": "大刀",
+  "loop": true,
+  "loop_seam": 1.15,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.29,
+  "offset": [
+   0,
+   -12
+  ],
+  "palette": [
+   "#700e20",
+   "#c42224",
+   "#f8702c",
+   "#ffd678"
+  ],
+  "palette_name": "flame_crimson",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_01_fx.png",
+  "w": 129,
+  "weapon": "wp_xianxia_tier3_a_01.png",
+  "weapon_h": 40,
+  "weapon_w": 128
+ },
+ "wp_xianxia_tier3_a_02_fx": {
+  "align": {
+   "dist_median": 3.61,
+   "dist_p90": 7.0,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    8.5,
+    20.5
+   ],
+   "center": [
+    0.5,
+    20.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    8,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    20.5
+   ]
+  },
+  "element": "lightning",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 70,
+  "hard_alpha": true,
+  "label": "長槍",
+  "loop": true,
+  "loop_seam": 1.15,
+  "loop_wrap_diff_px": 0,
+  "motion": 18.55,
+  "offset": [
+   0,
+   -8
+  ],
+  "palette": [
+   "#4a1e8c",
+   "#8a48de",
+   "#be96ff",
+   "#e8daff"
+  ],
+  "palette_name": "lightning",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_02_fx.png",
+  "w": 195,
+  "weapon": "wp_xianxia_tier3_a_02.png",
+  "weapon_h": 51,
+  "weapon_w": 192
+ },
+ "wp_xianxia_tier3_a_03_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.16,
+   "frac_within_blade_span": 0.999
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    112.5,
+    22.5
+   ],
+   "center": [
+    0.5,
+    22.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    112,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    22.5
+   ]
+  },
+  "element": "holy",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 80,
+  "hard_alpha": true,
+  "label": "方天畫戟",
+  "loop": true,
+  "loop_seam": 0.2,
+  "loop_wrap_diff_px": 0,
+  "motion": 4.24,
+  "offset": [
+   0,
+   -16
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_03_fx.png",
+  "w": 197,
+  "weapon": "wp_xianxia_tier3_a_03.png",
+  "weapon_h": 64,
+  "weapon_w": 192
+ },
+ "wp_xianxia_tier3_a_04_fx": {
+  "align": {
+   "dist_median": 10.0,
+   "dist_p90": 27.46,
+   "frac_within_blade_span": 0.967
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -0.16,
+   "axis_deg_forced": null,
+   "blade_base": [
+    -0.5,
+    26.1
+   ],
+   "center": [
+    97.5,
+    26.4
+   ],
+   "dir": [
+    1.0,
+    0.0028
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -98,
+    95
+   ],
+   "tip_end": [
+    192.5,
+    26.6
+   ]
+  },
+  "element": "wind",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 90,
+  "hard_alpha": true,
+  "label": "弓",
+  "loop": true,
+  "loop_seam": 1.08,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.46,
+  "offset": [
+   -20,
+   -11
+  ],
+  "palette": [
+   "#1c7048",
+   "#3eb870",
+   "#92eca8",
+   "#d6ffde"
+  ],
+  "palette_name": "wind",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_04_fx.png",
+  "w": 230,
+  "weapon": "wp_xianxia_tier3_a_04.png",
+  "weapon_h": 79,
+  "weapon_w": 192
+ },
+ "wp_xianxia_tier3_a_05_fx": {
+  "align": {
+   "dist_median": 1.41,
+   "dist_p90": 3.61,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 45.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    25.3,
+    57.7
+   ],
+   "center": [
+    5.5,
+    77.5
+   ],
+   "dir": [
+    0.7071,
+    -0.7071
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    28,
+    105
+   ],
+   "tip_end": [
+    79.7,
+    3.3
+   ]
+  },
+  "element": "water",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 91,
+  "hard_alpha": true,
+  "label": "雙股劍",
+  "loop": true,
+  "loop_seam": 0.87,
+  "loop_wrap_diff_px": 0,
+  "motion": 8.25,
+  "offset": [
+   -6,
+   -7
+  ],
+  "palette": [
+   "#2858a0",
+   "#5ca0e8",
+   "#aad6ff",
+   "#e2f2ff"
+  ],
+  "palette_name": "water_ice",
+  "parts": 2,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_a_05_fx.png",
+  "w": 95,
+  "weapon": "wp_xianxia_tier3_a_05.png",
+  "weapon_h": 84,
+  "weapon_w": 80
+ },
+ "wp_xianxia_tier3_b_00_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.16,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -2.73,
+   "axis_deg_forced": null,
+   "blade_base": [
+    -0.3,
+    27.9
+   ],
+   "center": [
+    69.6,
+    31.3
+   ],
+   "dir": [
+    0.9989,
+    0.0477
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -70,
+    58
+   ],
+   "tip_end": [
+    127.6,
+    34.0
+   ]
+  },
+  "element": "holy",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 115,
+  "hard_alpha": true,
+  "label": "拂塵",
+  "loop": true,
+  "loop_seam": 0.2,
+  "loop_wrap_diff_px": 0,
+  "motion": 6.34,
+  "offset": [
+   -5,
+   -15
+  ],
+  "palette": [
+   "#966414",
+   "#deaa30",
+   "#ffdc6e",
+   "#fff4c8"
+  ],
+  "palette_name": "holy_gold",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_00_fx.png",
+  "w": 138,
+  "weapon": "wp_xianxia_tier3_b_00.png",
+  "weapon_h": 100,
+  "weapon_w": 128
+ },
+ "wp_xianxia_tier3_b_01_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.61,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -0.01,
+   "axis_deg_forced": null,
+   "blade_base": [
+    -0.3,
+    14.6
+   ],
+   "center": [
+    43.7,
+    14.7
+   ],
+   "dir": [
+    1.0,
+    0.0001
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -44,
+    36
+   ],
+   "tip_end": [
+    79.7,
+    14.7
+   ]
+  },
+  "element": "flame",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 45,
+  "hard_alpha": true,
+  "label": "鐵扇",
+  "loop": true,
+  "loop_seam": 1.0,
+  "loop_wrap_diff_px": 0,
+  "motion": 4.73,
+  "offset": [
+   -1,
+   -13
+  ],
+  "palette": [
+   "#700e20",
+   "#c42224",
+   "#f8702c",
+   "#ffd678"
+  ],
+  "palette_name": "flame_crimson",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_01_fx.png",
+  "w": 82,
+  "weapon": "wp_xianxia_tier3_b_01.png",
+  "weapon_h": 29,
+  "weapon_w": 80
+ },
+ "wp_xianxia_tier3_b_02_fx": {
+  "align": {
+   "dist_median": 3.0,
+   "dist_p90": 9.9,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": -45.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    8.5,
+    4.5
+   ],
+   "center": [
+    8.5,
+    4.5
+   ],
+   "dir": [
+    0.7071,
+    0.7071
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    0,
+    100
+   ],
+   "tip_end": [
+    79.2,
+    75.2
+   ]
+  },
+  "element": "ink",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": {
+   "length": 1.6,
+   "mist": 1.4,
+   "wisps": 14
+  },
+  "h": 103,
+  "hard_alpha": true,
+  "label": "判官筆",
+  "loop": true,
+  "loop_seam": 1.04,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.57,
+  "offset": [
+   -5,
+   -16
+  ],
+  "palette": [
+   "#221032",
+   "#422060",
+   "#6e409c",
+   "#a078d2"
+  ],
+  "palette_name": "ink",
+  "parts": 2,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_02_fx.png",
+  "w": 92,
+  "weapon": "wp_xianxia_tier3_b_02.png",
+  "weapon_h": 79,
+  "weapon_w": 80
+ },
+ "wp_xianxia_tier3_b_03_fx": {
+  "align": {
+   "dist_median": 4.0,
+   "dist_p90": 8.0,
+   "frac_within_blade_span": 1.0
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    0.5,
+    20.5
+   ],
+   "center": [
+    0.5,
+    20.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    0,
+    127
+   ],
+   "tip_end": [
+    127.5,
+    20.5
+   ]
+  },
+  "element": "lightning",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 124,
+  "hard_alpha": true,
+  "label": "流星錘",
+  "loop": true,
+  "loop_seam": 0.86,
+  "loop_wrap_diff_px": 0,
+  "motion": 17.44,
+  "offset": [
+   -2,
+   -6
+  ],
+  "palette": [
+   "#4a1e8c",
+   "#8a48de",
+   "#be96ff",
+   "#e8daff"
+  ],
+  "palette_name": "lightning",
+  "parts": 2,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_03_fx.png",
+  "w": 131,
+  "weapon": "wp_xianxia_tier3_b_03.png",
+  "weapon_h": 118,
+  "weapon_w": 128
+ },
+ "wp_xianxia_tier3_b_04_fx": {
+  "align": {
+   "dist_median": 1.71,
+   "dist_p90": 3.16,
+   "frac_within_blade_span": 0.999
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.09,
+   "axis_deg_forced": null,
+   "blade_base": [
+    -0.2,
+    15.0
+   ],
+   "center": [
+    42.8,
+    15.0
+   ],
+   "dir": [
+    1.0,
+    -0.0016
+   ],
+   "mode": "silhouette",
+   "span": null,
+   "t_range": [
+    -43,
+    37
+   ],
+   "tip_end": [
+    79.8,
+    14.9
+   ]
+  },
+  "element": "holy",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 51,
+  "hard_alpha": true,
+  "label": "如意",
+  "loop": true,
+  "loop_seam": 0.25,
+  "loop_wrap_diff_px": 0,
+  "motion": 9.74,
+  "offset": [
+   -5,
+   -18
+  ],
+  "palette": [
+   "#166e50",
+   "#34b47a",
+   "#84e6ac",
+   "#d4ffe2"
+  ],
+  "palette_name": "holy_jade",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_04_fx.png",
+  "w": 90,
+  "weapon": "wp_xianxia_tier3_b_04.png",
+  "weapon_h": 28,
+  "weapon_w": 80
+ },
+ "wp_xianxia_tier3_b_05_fx": {
+  "align": {
+   "dist_median": 2.0,
+   "dist_p90": 3.16,
+   "frac_within_blade_span": 0.998
+  },
+  "anchor": "weapon_topleft",
+  "blade": {
+   "angle_deg": 0.0,
+   "axis_deg_forced": null,
+   "blade_base": [
+    125.5,
+    28.5
+   ],
+   "center": [
+    0.5,
+    28.5
+   ],
+   "dir": [
+    1.0,
+    -0.0
+   ],
+   "mode": "run",
+   "span": null,
+   "t_range": [
+    125,
+    191
+   ],
+   "tip_end": [
+    191.5,
+    28.5
+   ]
+  },
+  "element": "holy",
+  "fps": 12,
+  "frames": 16,
+  "fx_opts": null,
+  "h": 83,
+  "hard_alpha": true,
+  "label": "禪杖",
+  "loop": true,
+  "loop_seam": 0.29,
+  "loop_wrap_diff_px": 0,
+  "motion": 3.04,
+  "offset": [
+   0,
+   -19
+  ],
+  "palette": [
+   "#a04c12",
+   "#e89428",
+   "#ffc65a",
+   "#ffecb2"
+  ],
+  "palette_name": "holy_buddha",
+  "parts": null,
+  "seed": 7,
+  "strip": "wp_xianxia_tier3_b_05_fx.png",
+  "w": 197,
+  "weapon": "wp_xianxia_tier3_b_05.png",
+  "weapon_h": 61,
+  "weapon_w": 192
+ }
+}

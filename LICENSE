@@ -1,0 +1,39 @@
+MIT License
+
+Copyright (c) 2026 渝州秋 (AkiFinn3)
+
+《谁让这个刷子修仙的》——代码、数值、界面、文案部分
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------
+第三方素材（不属于上述 MIT 授权范围，各自适用其原授权）：
+
+1. 美术素材 Xianxia Pixel Pack —— willYEE —— CC0 1.0 Universal
+   https://willyee.itch.io/xianxia-pixel-pack
+   CC0 素材属公共领域，不受版权与许可限制。
+
+2. 字体 Fusion Pixel —— TakWolf —— SIL Open Font License 1.1
+   https://github.com/TakWolf/fusion-pixel-font
+   字体授权文本见 assets/fonts/OFL.txt。
+
+3. 字体 Zpix（最像素）—— SolidZORO —— 免费使用（含商用）
+   https://github.com/SolidZORO/zpix-pixel-font
+
+详细说明见 LICENSES.md 与 署名与授权.txt。

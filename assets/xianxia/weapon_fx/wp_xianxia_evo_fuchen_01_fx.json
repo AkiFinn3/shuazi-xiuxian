@@ -1,0 +1,74 @@
+{
+ "align": {
+  "dist_median": 2.0,
+  "dist_p90": 3.61,
+  "frac_within_blade_span": 1.0
+ },
+ "anchor": "weapon_topleft",
+ "blade": {
+  "angle_deg": 0.35,
+  "axis_deg_forced": null,
+  "blade_base": [
+   0.9,
+   40.6
+  ],
+  "center": [
+   82.9,
+   40.1
+  ],
+  "dir": [
+   1.0,
+   -0.0061
+  ],
+  "mode": "silhouette",
+  "span": null,
+  "t_range": [
+   -82,
+   45
+  ],
+  "tip_end": [
+   127.9,
+   39.8
+  ]
+ },
+ "element": "holy",
+ "evo_stage": 1,
+ "evo_weapon": "fuchen",
+ "fps": 12,
+ "frames": 16,
+ "fx_opts": {
+  "cycles": 1,
+  "motes": 8,
+  "pulse": 1.0
+ },
+ "grip": [
+  0,
+  17
+ ],
+ "h": 136,
+ "hard_alpha": true,
+ "intensity": 1.0,
+ "label": "拂塵 覺醒",
+ "loop": true,
+ "loop_seam": 0.22,
+ "loop_wrap_diff_px": 0,
+ "motion": 5.65,
+ "offset": [
+  -6,
+  -14
+ ],
+ "palette": [
+  "#966414",
+  "#deaa30",
+  "#ffdc6e",
+  "#fff4c8"
+ ],
+ "palette_name": "holy_gold",
+ "parts": null,
+ "seed": 7,
+ "strip": "wp_xianxia_evo_fuchen_01_fx.png",
+ "w": 143,
+ "weapon": "wp_xianxia_evo_fuchen_01.png",
+ "weapon_h": 117,
+ "weapon_w": 131
+}

@@ -1,0 +1,63 @@
+{
+ "align": {
+  "dist_median": 1.41,
+  "dist_p90": 3.61,
+  "frac_within_blade_span": 1.0
+ },
+ "anchor": "weapon_topleft",
+ "blade": {
+  "angle_deg": 45.0,
+  "axis_deg_forced": null,
+  "blade_base": [
+   25.3,
+   57.7
+  ],
+  "center": [
+   5.5,
+   77.5
+  ],
+  "dir": [
+   0.7071,
+   -0.7071
+  ],
+  "mode": "run",
+  "span": null,
+  "t_range": [
+   28,
+   105
+  ],
+  "tip_end": [
+   79.7,
+   3.3
+  ]
+ },
+ "element": "water",
+ "fps": 12,
+ "frames": 16,
+ "fx_opts": null,
+ "h": 91,
+ "hard_alpha": true,
+ "label": "雙股劍",
+ "loop": true,
+ "loop_seam": 0.87,
+ "loop_wrap_diff_px": 0,
+ "motion": 8.25,
+ "offset": [
+  -6,
+  -7
+ ],
+ "palette": [
+  "#2858a0",
+  "#5ca0e8",
+  "#aad6ff",
+  "#e2f2ff"
+ ],
+ "palette_name": "water_ice",
+ "parts": 2,
+ "seed": 7,
+ "strip": "wp_xianxia_tier3_a_05_fx.png",
+ "w": 95,
+ "weapon": "wp_xianxia_tier3_a_05.png",
+ "weapon_h": 84,
+ "weapon_w": 80
+}

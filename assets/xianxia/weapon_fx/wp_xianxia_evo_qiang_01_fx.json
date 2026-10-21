@@ -1,0 +1,74 @@
+{
+ "align": {
+  "dist_median": 4.0,
+  "dist_p90": 8.25,
+  "frac_within_blade_span": 1.0
+ },
+ "anchor": "weapon_topleft",
+ "blade": {
+  "angle_deg": 0.0,
+  "axis_deg_forced": null,
+  "blade_base": [
+   120.5,
+   32.5
+  ],
+  "center": [
+   0.5,
+   32.5
+  ],
+  "dir": [
+   1.0,
+   -0.0
+  ],
+  "mode": "run",
+  "span": null,
+  "t_range": [
+   120,
+   191
+  ],
+  "tip_end": [
+   191.5,
+   32.5
+  ]
+ },
+ "element": "lightning",
+ "evo_stage": 1,
+ "evo_weapon": "qiang",
+ "fps": 12,
+ "frames": 16,
+ "fx_opts": {
+  "arcs": 0,
+  "flashes": 2,
+  "reach": 1.0
+ },
+ "grip": [
+  0,
+  32
+ ],
+ "h": 96,
+ "hard_alpha": true,
+ "intensity": 1.0,
+ "label": "長槍 覺醒",
+ "loop": true,
+ "loop_seam": 1.1,
+ "loop_wrap_diff_px": 0,
+ "motion": 5.92,
+ "offset": [
+  0,
+  -10
+ ],
+ "palette": [
+  "#4a1e8c",
+  "#8a48de",
+  "#be96ff",
+  "#e8daff"
+ ],
+ "palette_name": "lightning",
+ "parts": null,
+ "seed": 7,
+ "strip": "wp_xianxia_evo_qiang_01_fx.png",
+ "w": 208,
+ "weapon": "wp_xianxia_evo_qiang_01.png",
+ "weapon_h": 72,
+ "weapon_w": 208
+}

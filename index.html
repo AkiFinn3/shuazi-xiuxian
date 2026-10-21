@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0f16" />
+<meta name="description" content="修仙题材的挂机刷宝像素游戏：自动打怪、刷装备、炼丹炼器、渡劫飞升。" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="刷子修仙" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<title>谁让这个刷子修仙的</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app" class="app" hidden>
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="avatar-box"><canvas id="avatarCanvas" width="48" height="48"></canvas></div>
+      <div class="who">
+        <div class="who-name"><span id="playerName">无名散修</span><span id="playerTitle" class="title"></span></div>
+        <div class="who-realm"><span id="realmName">炼气期·初期</span><span id="levelText" class="dim">Lv.1</span></div>
+      </div>
+    </div>
+
+    <div class="topbar-mid">
+      <div class="bar bar-xp">
+        <span class="bar-label">修为</span>
+        <div class="bar-track"><i id="xpFill"></i></div>
+        <span id="xpText" class="bar-text">0/0</span>
+      </div>
+      <div class="bar bar-hp">
+        <span class="bar-label">气血</span>
+        <div class="bar-track"><i id="hpFill"></i></div>
+        <span id="hpText" class="bar-text">0/0</span>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="stat-chip" title="灵石"><img src="assets/game/ui/ui_xianxia_item_spirit_stone.png" alt=""><span id="stoneText">0</span></div>
+      <div class="stat-chip" title="战力"><span class="chip-label">战力</span><span id="powerText">0</span></div>
+      <div class="stat-chip" title="秘境层数"><span class="chip-label">秘境</span><span id="floorText">1层</span></div>
+      <button id="btnSettings" class="btn btn-ghost" title="设置">设置</button>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <main class="main">
+    <aside class="side side-left" id="leftPanel"></aside>
+
+    <section class="stage-wrap">
+      <div class="stage" id="stage">
+        <canvas id="game" width="640" height="360"></canvas>
+        <div class="stage-overlay" id="stageOverlay"></div>
+      </div>
+      <div class="skillbar" id="skillBar"></div>
+    </section>
+
+    <aside class="side side-right" id="rightPanel"></aside>
+  </main>
+
+  <!-- 底栏 -->
+  <footer class="bottombar">
+    <div class="log" id="log"></div>
+    <div class="toggles">
+      <label class="tgl"><input type="checkbox" id="tglAutoBattle" checked><span>自动战斗</span></label>
+      <label class="tgl"><input type="checkbox" id="tglAutoPick" checked><span>自动拾取</span></label>
+      <label class="tgl"><input type="checkbox" id="tglAutoSalvage" checked><span>自动分解</span></label>
+      <button id="btnHelp" class="btn btn-ghost">玩法</button>
+    </div>
+  </footer>
+</div>
+
+<!-- 弹层容器 -->
+<div id="modalRoot" class="modal-root" hidden></div>
+<div id="toastRoot" class="toast-root"></div>
+
+<noscript><p style="color:#fff;padding:2rem">本游戏需要启用 JavaScript。</p></noscript>
+<script>
+  // 模块加载失败时（通常是直接双击 index.html 打开）给出提示
+  window.addEventListener('error', function (e) {
+    if (e.target && e.target.tagName === 'SCRIPT') {
+      document.getElementById('fatal').hidden = false;
+    }
+  }, true);
+</script>
+<div id="fatal" class="fatal" hidden>
+  <div class="fatal-box">
+    <h2>请用本地服务器打开</h2>
+    <p>浏览器不允许 <code>file://</code> 页面加载 ES 模块。<br>在项目目录执行：</p>
+    <pre>./run.sh</pre>
+    <p>然后访问 <code>http://localhost:8123</code></p>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

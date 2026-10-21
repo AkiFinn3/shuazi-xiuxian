@@ -1,0 +1,63 @@
+{
+ "align": {
+  "dist_median": 2.0,
+  "dist_p90": 3.16,
+  "frac_within_blade_span": 1.0
+ },
+ "anchor": "weapon_topleft",
+ "blade": {
+  "angle_deg": -2.73,
+  "axis_deg_forced": null,
+  "blade_base": [
+   -0.3,
+   27.9
+  ],
+  "center": [
+   69.6,
+   31.3
+  ],
+  "dir": [
+   0.9989,
+   0.0477
+  ],
+  "mode": "silhouette",
+  "span": null,
+  "t_range": [
+   -70,
+   58
+  ],
+  "tip_end": [
+   127.6,
+   34.0
+  ]
+ },
+ "element": "holy",
+ "fps": 12,
+ "frames": 16,
+ "fx_opts": null,
+ "h": 115,
+ "hard_alpha": true,
+ "label": "拂塵",
+ "loop": true,
+ "loop_seam": 0.2,
+ "loop_wrap_diff_px": 0,
+ "motion": 6.34,
+ "offset": [
+  -5,
+  -15
+ ],
+ "palette": [
+  "#966414",
+  "#deaa30",
+  "#ffdc6e",
+  "#fff4c8"
+ ],
+ "palette_name": "holy_gold",
+ "parts": null,
+ "seed": 7,
+ "strip": "wp_xianxia_tier3_b_00_fx.png",
+ "w": 138,
+ "weapon": "wp_xianxia_tier3_b_00.png",
+ "weapon_h": 100,
+ "weapon_w": 128
+}

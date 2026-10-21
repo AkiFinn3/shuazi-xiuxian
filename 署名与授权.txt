@@ -1,0 +1,42 @@
+《谁让这个刷子修仙的》 v1.0.0
+谁让这个刷子修仙的 —— 挂机刷宝 · 像素修仙 · 离线也赚
+==================================================
+
+【署名】
+制作 / 程序 / 策划：渝州秋 (AkiFinn3)
+发行：谁让这个刷子修仙的 v1.0.0
+
+【美术素材】
+Xianxia Pixel Pack
+  作者：willYEE
+  来源：https://willyee.itch.io/xianxia-pixel-pack
+  授权：CC0 1.0 Universal（公共领域，可商用、可修改、无需署名）
+  说明：9 位主角（待机/行走/三段连击/施法/受击/死亡）、17 种妖兽、
+       3 头守关 Boss、30 组 NPC 立绘、4 套地形、法术特效、兵器图标、玉纹 UI 套件。
+  声明：原作者在素材页披露部分图像由 AI 生成后人工逐帧清理，CC0 授权覆盖全部内容。
+
+【字体】
+Fusion Pixel 12px（缝合像素字体）
+  作者：TakWolf
+  来源：https://github.com/TakWolf/fusion-pixel-font
+  授权：SIL Open Font License 1.1
+Zpix（最像素）
+  来源：https://github.com/SolidZORO/zpix-pixel-font
+  授权：免费使用（含商用）
+
+【音频】
+全部音效与背景提示音由 WebAudio 实时合成（js/engine/audio.js），
+未使用任何第三方音频素材。
+
+【界面图标】
+装备部位图标、App 图标由本项目脚本绘制（tools/make_icons.py），原创。
+
+【代码与文案】
+全部代码、界面、数值表、剧情与文案为原创。
+
+【平台】
+Windows / macOS / 网页版（含 PWA，可添加到手机主屏幕）
+
+【免责】
+本游戏为免费作品，不含内购与广告。
+游戏内含成人向情感暗示（不露骨），建议 18 岁以上游玩。

@@ -1,0 +1,63 @@
+{
+ "align": {
+  "dist_median": 4.0,
+  "dist_p90": 8.0,
+  "frac_within_blade_span": 1.0
+ },
+ "anchor": "weapon_topleft",
+ "blade": {
+  "angle_deg": 0.0,
+  "axis_deg_forced": null,
+  "blade_base": [
+   0.5,
+   20.5
+  ],
+  "center": [
+   0.5,
+   20.5
+  ],
+  "dir": [
+   1.0,
+   -0.0
+  ],
+  "mode": "run",
+  "span": null,
+  "t_range": [
+   0,
+   127
+  ],
+  "tip_end": [
+   127.5,
+   20.5
+  ]
+ },
+ "element": "lightning",
+ "fps": 12,
+ "frames": 16,
+ "fx_opts": null,
+ "h": 124,
+ "hard_alpha": true,
+ "label": "流星錘",
+ "loop": true,
+ "loop_seam": 0.86,
+ "loop_wrap_diff_px": 0,
+ "motion": 17.44,
+ "offset": [
+  -2,
+  -6
+ ],
+ "palette": [
+  "#4a1e8c",
+  "#8a48de",
+  "#be96ff",
+  "#e8daff"
+ ],
+ "palette_name": "lightning",
+ "parts": 2,
+ "seed": 7,
+ "strip": "wp_xianxia_tier3_b_03_fx.png",
+ "w": 131,
+ "weapon": "wp_xianxia_tier3_b_03.png",
+ "weapon_h": 118,
+ "weapon_w": 128
+}

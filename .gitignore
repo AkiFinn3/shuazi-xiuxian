@@ -1,0 +1,11 @@
+# 原始素材包（54MB，只在本地保留，可用 tools/fetch-assets.sh 重新下载）
+assets/raw/
+# 构建产物
+dist/
+dist-macos/
+build/
+release/
+# 截图原始文件
+itch-assets/raw/
+.DS_Store
+node_modules/
