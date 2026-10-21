@@ -23,6 +23,7 @@ import { openModal, closeModal, toast } from './ui/modal.js';
 import { openCreation } from './ui/creation.js';
 import { initHud, refreshHud } from './ui/hud.js';
 import { buildPanels, refreshPanels, currentTab, isTouch } from './ui/panels.js';
+import { initLayout, isMobileLayout } from './ui/layout.js';
 import { buildSkillBar, refreshSkillBar } from './ui/skills.js';
 import { logLine } from './ui/log.js';
 import { DEATH_QUIPS, QUIPS } from './data/names.js';
@@ -75,7 +76,15 @@ class Game {
     initHud(this);
     buildPanels(this);
     buildSkillBar(this);
+    initLayout(this);
     this.bindUi();
+
+    // 移动端降级：少粒子、关震屏
+    this.lowFx = isMobileLayout() || isTouch();
+    this.fx.lowFx = this.lowFx;
+    if (this.lowFx) {
+      this.fx.maxNumbers = 40;
+    }
     this.loop.start();
     logLine(`${state.name} 来到青云山脚。`, 'l-good');
   }

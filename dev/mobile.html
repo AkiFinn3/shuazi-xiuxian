@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>移动端布局预览（横屏 / 竖屏）</title>
+<style>
+  html, body { margin: 0; background: #0a0d14; color: #e6ecf5;
+    font-family: 'FusionPixel', 'PingFang SC', monospace; }
+  .wrap { display: flex; gap: 24px; padding: 20px; align-items: flex-start; flex-wrap: wrap; }
+  .dev { display: grid; gap: 8px; }
+  .dev h3 { margin: 0; font-size: 13px; color: #e8c46a; font-weight: normal; }
+  .frame { position: relative; border: 2px solid #3b4763; border-radius: 10px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.6); background: #05070b; }
+  .frame iframe { border: 0; display: block; transform-origin: 0 0; }
+  .land { width: 852px; height: 390px; }
+  .land iframe { width: 852px; height: 390px; }
+  .port { width: 393px; height: 852px; }
+  .port iframe { width: 393px; height: 852px; }
+  .note { color: #8c9ab5; font-size: 11px; max-width: 760px; line-height: 1.7; }
+  .scaler { transform: scale(.52); transform-origin: 0 0; }
+  .slot { width: 852px; height: 390px; overflow: hidden; }
+  .slot.port { width: 393px; height: 852px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="dev">
+    <h3>横屏 852 × 390（抽屉从右侧滑出）</h3>
+    <div class="slot"><div class="frame land scaler"><iframe id="f1" src="../index.html"></iframe></div></div>
+  </div>
+  <div class="dev">
+    <h3>竖屏 393 × 852（页签内容在下方）</h3>
+    <div class="slot port"><div class="frame port scaler"><iframe id="f2" src="../index.html"></iframe></div></div>
+  </div>
+  <div class="note">
+    两台设备各自独立存档（不同 iframe 但同源 → 共享 localStorage，刷新后进度互通）。<br />
+    手机上打开时，会自动命中窄屏断点：战场在上，底部页签栏在拇指区，横屏时页签内容变成可收起的抽屉。
+  </div>
+</div>
+</body>
+</html>

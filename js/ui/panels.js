@@ -10,6 +10,7 @@ import { renderFate } from './fate.js';
 import { renderDungeon } from './dungeon.js';
 import { renderAscend } from './ascend.js';
 import { bagSize } from '../game/ascend.js';
+import { openItemSheet } from './sheet.js';
 import { fateSprite, FATE_TYPES, FATE_TIERS } from '../game/fate.js';
 
 const SLOT_GLYPH = { weapon: '兵', helmet: '冠', robe: '袍', boots: '靴', pendant: '佩', ring: '戒' };
@@ -48,9 +49,10 @@ export function refreshPanels() {
   renderRight();
 }
 
-/** 切换右侧标签页 */
+/** 切换右侧标签页（并立即重绘） */
 export function setRightTab(tab) {
   rightTab = tab;
+  if (game) renderRight();
 }
 
 /** 当前右侧标签页 */
@@ -259,15 +261,16 @@ function renderBag(body) {
     el.onmousemove = (e) => showTooltip(itemTooltip(item), e.clientX, e.clientY);
     el.onmouseleave = hideTooltip;
     el.onclick = () => {
+      // 触屏：弹底部详情层（hover 气泡在触屏上没有意义）
+      if (isTouch()) {
+        openItemSheet(item, {
+          onEquip: (it) => { game.equipItem(it.id); refreshPanels(); },
+          onSalvage: (it) => { game.salvageItem(it.id); refreshPanels(); },
+        });
+        return;
+      }
       game.equipItem(item.id);
       refreshPanels();
-      // 触屏没有 hover，用提示代替气泡
-      if (isTouch()) {
-        const rarity = RARITIES[rarityIndex(item.rarity)];
-        const affixes = Object.entries(item.affixes || {})
-          .map(([k, v]) => `${STAT_LABEL[k] || k}+${v}`).join('、');
-        toast(`${item.name}（${rarity.name}）战力 ${item.power}${affixes ? ' · ' + affixes : ''}`, rarity.color);
-      }
     };
     el.oncontextmenu = (e) => { e.preventDefault(); game.salvageItem(item.id); refreshPanels(); };
   });
@@ -305,10 +308,12 @@ export function itemTooltip(item) {
     const diff = item.power - eq.power;
     const cls = diff >= 0 ? 'tt-up' : 'tt-down';
     lines.push(`<div class="tt-line ${cls}" style="margin-top:4px">对比 ${eq.name}：${diff >= 0 ? '+' : ''}${diff} 战力</div>`);
-  } else {
+  } else if (!isTouch()) {
     lines.push('<div class="tt-line" style="margin-top:4px">点击装备</div>');
   }
-  lines.push('<div class="tt-line" style="margin-top:4px">右键分解</div>');
+  if (!isTouch()) {
+    lines.push('<div class="tt-line" style="margin-top:4px">右键分解</div>');
+  }
   return lines.join('');
 }
 

@@ -10,6 +10,9 @@ export class Fx {
     this.shakeTime = 0;
     this.flash = 0;
     this.flashColor = '255,255,255';
+    this.lowFx = false;      // 移动端降级
+    this.maxNumbers = 90;
+    this.maxParticles = 400;
   }
 
   damage(x, y, value, opts = {}) {
@@ -25,10 +28,11 @@ export class Fx {
       size: crit ? 15 : 12,
       bold: crit,
     });
-    if (this.numbers.length > 90) this.numbers.splice(0, this.numbers.length - 90);
+    if (this.numbers.length > this.maxNumbers) this.numbers.splice(0, this.numbers.length - this.maxNumbers);
   }
 
   spark(x, y, color = '#ffd9a0', count = 6, spread = 60) {
+    if (this.lowFx) count = Math.ceil(count * 0.45);
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2;
       const sp = 20 + Math.random() * spread;
@@ -43,7 +47,7 @@ export class Fx {
         size: Math.random() < 0.3 ? 2 : 1,
       });
     }
-    if (this.particles.length > 400) this.particles.splice(0, this.particles.length - 400);
+    if (this.particles.length > this.maxParticles) this.particles.splice(0, this.particles.length - this.maxParticles);
   }
 
   /** 掉落光柱 */
@@ -58,6 +62,7 @@ export class Fx {
   }
 
   addShake(amount) {
+    if (this.lowFx) return;      // 移动端不震屏，省电且不晕
     this.shake = Math.max(this.shake, amount);
     this.shakeTime = 0.22;
   }

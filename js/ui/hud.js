@@ -1,6 +1,7 @@
 // 顶栏刷新
 import { realmLabel, expNeed, levelIndex } from '../game/state.js';
 import { CHAPTERS } from '../data/config.js';
+import { isMobile } from './mobile.js';
 
 const el = {};
 let game = null;
@@ -41,7 +42,8 @@ export function refreshHud() {
   el.stone.textContent = fmt(s.stats.stone || s.coin);
   el.power.textContent = fmt(stats.power);
   const chapter = CHAPTERS[Math.floor((s.floor - 1) / 10) % CHAPTERS.length];
-  el.floor.textContent = `${s.floor}层 ${chapter.name}`;
+  // 窄屏空间紧张，秘境只显示层数
+  el.floor.textContent = isMobile() ? `${s.floor}层` : `${s.floor}层 ${chapter.name}`;
 }
 
 function fmt(n) {
