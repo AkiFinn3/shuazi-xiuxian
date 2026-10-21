@@ -18,9 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: 收集站点文件
+        run: |
+          mkdir -p _site/assets
+          cp index.html manifest.webmanifest sw.js LICENSE 署名与授权.txt _site/
+          cp -r css js _site/
+          cp -r assets/game assets/icons assets/fonts _site/assets/
+
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
+
       - id: deployment
         uses: actions/deploy-pages@v4
