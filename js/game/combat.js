@@ -101,11 +101,13 @@ export class Combat {
 
   _updateSkills(dt) {
     const state = this.game.state;
+    const fate = state.fate;
+    const cdMult = fate && fate.unlocked && fate.tier >= 2 ? 0.9 : 1;
     for (let i = 0; i < SKILLS.length; i++) {
       this.skillCds[i] = Math.max(0, this.skillCds[i] - dt);
       const s = SKILLS[i];
       if (this.skillCds[i] <= 0 && isUnlocked(s, state) && this.enemies.some((e) => !e.dead)) {
-        this.skillCds[i] = s.cd;
+        this.skillCds[i] = s.cd * cdMult;
         this._castSkill(i);
       }
     }
@@ -457,6 +459,12 @@ export class Combat {
 
   /* ---------------- 波次推进 ---------------- */
   onWaveCleared() {
+    const g = this.game;
+    const st = g.state;
+    if (st.fate && st.fate.unlocked && st.fate.tier >= 4) {
+      st.hp = Math.min(g.stats.maxHp, st.hp + g.stats.maxHp * 0.03);
+      this.hero.hp = st.hp;
+    }
     this.wavesDone++;
     this.waveTimer = 0.7;
     if (this._bossDefeated) {

@@ -31,12 +31,12 @@ export function createState({ name, origin, appearance }) {
     partner: null,
     partnerKey: null,
     dualCd: 0,
-    buffs: { atkUntil: 0, atkPct: 0, luckUntil: 0, luck: 0 },
+    buffs: { atkUntil: 0, atkPct: 0, luckUntil: 0, luck: 0, tribResist: 0 },
     fate: { unlocked: false, type: null, tier: 1, level: 1, exp: 0, affixes: {} },
     ascend: { count: 0, points: 0, talents: {}, choice: null },
     settings: {
       autoBattle: true,
-      autoPick: true,
+      autoEquip: true,
       autoSalvage: true,
       autoSalvageBelow: 'xuan',
       autoAdvance: true,
@@ -67,6 +67,11 @@ export function normalizeState(state) {
   state.equip = Object.assign(base.equip, state.equip || {});
   state.buffs = Object.assign(base.buffs, state.buffs || {});
   state.npcAffinity = state.npcAffinity || {};
+  // 清理失效的待渡劫状态，避免卡境界或跳劫
+  if (state.pendingRealm != null
+    && (state.stage !== 3 || state.pendingRealm !== state.realm + 1 || state.realm >= REALMS.length - 1)) {
+    state.pendingRealm = null;
+  }
   return state;
 }
 
@@ -189,7 +194,7 @@ export function itemPower(item) {
  * 增加修为，返回 { levels: [], realmUp: boolean, blocked: boolean }
  */
 export function addExp(state, amount) {
-  const res = { levels: [], realmUp: false, blocked: false };
+  const res = { levels: [], realmUp: false, blocked: false, tribulation: null };
   let gain = amount * (1 + (deriveStats(state).spiritPct || 0) / 100);
   state.exp += gain;
 
@@ -200,22 +205,21 @@ export function addExp(state, amount) {
 
     // 跨大境界需要通关对应层数
     if (state.stage === 3) {
+      if (state.realm >= REALMS.length - 1) {
+        state.exp = need;
+        break;
+      }
       const gate = nextRealmFloor(state);
       if (gate !== null && state.bestFloor < gate) {
         state.exp = need;
         res.blocked = true;
         break;
       }
-      // 需要渡劫：先挂起，渡劫成功才算突破
-      if (state.pendingRealm == null) {
-        state.pendingRealm = state.realm + 1;
-        state.exp = need;
-        res.tribulation = state.pendingRealm;
-        break;
-      }
-      state.realm += 1;
-      state.stage = 0;
-      res.realmUp = true;
+      // 需要渡劫：先挂起，渡劫成功前不再自动推进
+      if (state.pendingRealm == null) state.pendingRealm = state.realm + 1;
+      state.exp = need;
+      res.tribulation = state.pendingRealm;
+      break;
     } else {
       state.stage += 1;
     }

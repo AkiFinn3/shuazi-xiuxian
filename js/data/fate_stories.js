@@ -45,8 +45,9 @@ export const FATE_STORIES = [
 /** 条件判定 */
 export function storyUnlocked(state, story) {
   const s = state;
+  if (!s.fate || !s.fate.unlocked) return false;
   const c = story.cond || {};
-  if (c.tier && !(s.fate && s.fate.tier >= c.tier)) return false;
+  if (c.tier && !(s.fate.tier >= c.tier)) return false;
   if (c.kills && (s.stats.kills || 0) < c.kills) return false;
   if (c.deaths && (s.stats.deaths || 0) < c.deaths) return false;
   if (c.realm && s.realm < c.realm) return false;

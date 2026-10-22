@@ -10,6 +10,106 @@ const SKY = {
   cloud: ['#1f2540', '#374066', '#5c6696'],
 };
 
+const TILE = 32;
+const skyCache = new Map();     // chapter index -> canvas
+const stripCache = new Map();   // terrain -> { back, ground, width }
+const nearCache = new Map();    // chapter index -> canvas
+
+function makeCanvas(w, h) {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  return c;
+}
+
+/** 场景需要的静态图片清单（供预载） */
+export function sceneAssetKeys(chapterIndex) {
+  const chapter = CHAPTERS[chapterIndex % CHAPTERS.length];
+  const keys = [];
+  if (chapter.moon) keys.push(chapter.moon);
+  const props = chapter.props || {};
+  for (const list of [props.far, props.mid, props.near, props.deco]) {
+    if (list) keys.push(...list);
+  }
+  keys.push(
+    `terrain/${chapter.terrain}_backwall_M`,
+    `terrain/${chapter.terrain}_ground_body_M`,
+    `terrain/${chapter.terrain}_ground_top_M`,
+  );
+  return [...new Set(keys)];
+}
+
+/** 天空 + 月亮只画一次 */
+function getSky(ci, chapter) {
+  const hit = skyCache.get(ci);
+  if (hit) return hit;
+  let moon = null;
+  if (chapter.moon) {
+    moon = img(chapter.moon);
+    if (!moon) return null;   // 等素材加载完再建缓存
+  }
+  const c = makeCanvas(VIEW.w, VIEW.h);
+  const ctx = c.getContext('2d');
+  const sky = SKY[chapter.terrain] || SKY.bamboo;
+  const g = ctx.createLinearGradient(0, 0, 0, VIEW.h);
+  g.addColorStop(0, sky[0]);
+  g.addColorStop(0.55, sky[1]);
+  g.addColorStop(1, sky[2]);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  if (moon) {
+    const meta = SPRITES.images[chapter.moon];
+    const height = 62;
+    const scale = height / (meta.h || moon.height);
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(moon, 74, 26, (meta.w || moon.width) * scale, height);
+  }
+  skyCache.set(ci, c);
+  return c;
+}
+
+/** 重复的背墙 / 地面瓦片压成一条，每帧只画一两次 */
+function getStrips(terrain) {
+  const hit = stripCache.get(terrain);
+  if (hit) return hit;
+  const back = img(`terrain/${terrain}_backwall_M`);
+  const body = img(`terrain/${terrain}_ground_body_M`);
+  const top = img(`terrain/${terrain}_ground_top_M`);
+  if (!back || !body || !top) return null;
+
+  const count = Math.ceil(VIEW.w / TILE) + 2;
+  const width = count * TILE;
+  const backC = makeCanvas(width, TILE);
+  const bctx = backC.getContext('2d');
+  bctx.globalAlpha = 0.18;
+  for (let i = 0; i < count; i++) bctx.drawImage(back, i * TILE, 0, TILE, TILE);
+
+  const groundC = makeCanvas(width, TILE * 3);
+  const gctx = groundC.getContext('2d');
+  for (let i = 0; i < count; i++) {
+    gctx.drawImage(top, i * TILE, 0, TILE, TILE);
+    gctx.drawImage(body, i * TILE, TILE, TILE, TILE);
+    gctx.drawImage(body, i * TILE, TILE * 2, TILE, TILE);
+  }
+  const entry = { back: backC, ground: groundC, width };
+  stripCache.set(terrain, entry);
+  return entry;
+}
+
+/** 近景贴两侧，不随卷轴移动，可整层缓存 */
+function getNear(ci, chapter) {
+  const hit = nearCache.get(ci);
+  if (hit) return hit;
+  const keys = chapter.props && chapter.props.near;
+  if (!keys || !keys.length) return null;
+  if (!keys.every((k) => img(k))) return null;
+  const c = makeCanvas(VIEW.w, VIEW.h);
+  const ctx = c.getContext('2d');
+  drawLayer(ctx, keys, { scroll: 0, factor: 1, height: 58, alpha: 1, groundY: VIEW.ground, edge: true });
+  nearCache.set(ci, c);
+  return c;
+}
+
 /** 稳定散列：同一道具每次布局一致 */
 function hash(str) {
   let h = 2166136261;
@@ -60,31 +160,23 @@ function drawLayer(ctx, keys, opts) {
 }
 
 export function drawScene(ctx, chapterIndex, scroll = 0) {
-  const chapter = CHAPTERS[chapterIndex % CHAPTERS.length];
+  const ci = chapterIndex % CHAPTERS.length;
+  const chapter = CHAPTERS[ci];
   const terrain = chapter.terrain;
-  const sky = SKY[terrain] || SKY.bamboo;
   const groundY = VIEW.ground;
 
-  // 天空
-  const g = ctx.createLinearGradient(0, 0, 0, VIEW.h);
-  g.addColorStop(0, sky[0]);
-  g.addColorStop(0.55, sky[1]);
-  g.addColorStop(1, sky[2]);
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, VIEW.w, VIEW.h);
-
-  // 月亮（固定在天空，不参与视差）
-  if (chapter.moon) {
-    const moon = img(chapter.moon);
-    if (moon) {
-      const meta = SPRITES.images[chapter.moon];
-      const height = 62;
-      const scale = height / (meta.h || moon.height);
-      ctx.save();
-      ctx.globalAlpha = 0.5;
-      ctx.drawImage(moon, 74, 26, (meta.w || moon.width) * scale, height);
-      ctx.restore();
-    }
+  // 天空 + 月亮（缓存）
+  const skyC = getSky(ci, chapter);
+  if (skyC) {
+    ctx.drawImage(skyC, 0, 0);
+  } else {
+    const sky = SKY[terrain] || SKY.bamboo;
+    const g = ctx.createLinearGradient(0, 0, 0, VIEW.h);
+    g.addColorStop(0, sky[0]);
+    g.addColorStop(0.55, sky[1]);
+    g.addColorStop(1, sky[2]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, VIEW.w, VIEW.h);
   }
 
   // 远景
@@ -96,36 +188,42 @@ export function drawScene(ctx, chapterIndex, scroll = 0) {
     scroll, factor: 0.18, height: 84, alpha: 0.92, groundY,
   });
 
-  // 背墙
-  const back = img(`terrain/${terrain}_backwall_M`);
-  if (back) {
-    ctx.save();
-    ctx.globalAlpha = 0.18;
-    for (let i = -1; i * 32 < VIEW.w + 32; i++) {
-      ctx.drawImage(back, i * 32 - ((scroll * 0.1) % 32), groundY - 96, 32, 32);
+  // 背墙 + 地面：合并后的瓦片条，替代每帧上百次 drawImage
+  const strips = getStrips(terrain);
+  if (strips) {
+    const backOff = (scroll * 0.1) % TILE;
+    for (let x = -backOff - TILE; x < VIEW.w; x += strips.width) {
+      ctx.drawImage(strips.back, x, groundY - 96);
     }
-    ctx.restore();
-  }
-
-  // 地面
-  const body = img(`terrain/${terrain}_ground_body_M`);
-  const top = img(`terrain/${terrain}_ground_top_M`);
-  if (body) {
-    for (let i = -1; i * 32 < VIEW.w + 32; i++) {
-      const x = i * 32 - ((scroll * 0.25) % 32);
-      if (top) ctx.drawImage(top, x, groundY - 32, 32, 32);
-      ctx.drawImage(body, x, groundY, 32, 32);
-      ctx.drawImage(body, x, groundY + 32, 32, 32);
+    const groundOff = (scroll * 0.25) % TILE;
+    for (let x = -groundOff - TILE; x < VIEW.w; x += strips.width) {
+      ctx.drawImage(strips.ground, x, groundY - 32);
     }
   } else {
-    ctx.fillStyle = '#26301f';
-    ctx.fillRect(0, groundY, VIEW.w, VIEW.h - groundY);
+    const body = img(`terrain/${terrain}_ground_body_M`);
+    const top = img(`terrain/${terrain}_ground_top_M`);
+    if (body) {
+      for (let i = -1; i * TILE < VIEW.w + TILE; i++) {
+        const x = i * TILE - ((scroll * 0.25) % TILE);
+        if (top) ctx.drawImage(top, x, groundY - 32, TILE, TILE);
+        ctx.drawImage(body, x, groundY, TILE, TILE);
+        ctx.drawImage(body, x, groundY + TILE, TILE, TILE);
+      }
+    } else {
+      ctx.fillStyle = '#26301f';
+      ctx.fillRect(0, groundY, VIEW.w, VIEW.h - groundY);
+    }
   }
 
   // 近景（贴两侧，框住战场）
-  drawLayer(ctx, chapter.props && chapter.props.near, {
-    scroll, factor: 1, height: 58, alpha: 1, groundY, edge: true,
-  });
+  const nearC = getNear(ci, chapter);
+  if (nearC) {
+    ctx.drawImage(nearC, 0, 0);
+  } else {
+    drawLayer(ctx, chapter.props && chapter.props.near, {
+      scroll, factor: 1, height: 58, alpha: 1, groundY, edge: true,
+    });
+  }
 
   // 地面小装饰
   drawDeco(ctx, chapter.props && chapter.props.deco, scroll, groundY);

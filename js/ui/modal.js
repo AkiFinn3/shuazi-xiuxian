@@ -41,6 +41,17 @@ export function toast(text, color) {
 
 /* ---------------- 物品气泡 ---------------- */
 let tipEl = null;
+let tipW = 0;
+let tipH = 0;
+
+function placeTooltip(x, y) {
+  let left = x + 14;
+  let top = y + 14;
+  if (left + tipW > window.innerWidth - 8) left = x - tipW - 12;
+  if (top + tipH > window.innerHeight - 8) top = y - tipH - 12;
+  tipEl.style.left = Math.max(4, left) + 'px';
+  tipEl.style.top = Math.max(4, top) + 'px';
+}
 
 export function showTooltip(html, x, y) {
   if (!tipEl) {
@@ -51,12 +62,15 @@ export function showTooltip(html, x, y) {
   tipEl.innerHTML = html;
   tipEl.style.display = 'block';
   const r = tipEl.getBoundingClientRect();
-  let left = x + 14;
-  let top = y + 14;
-  if (left + r.width > window.innerWidth - 8) left = x - r.width - 12;
-  if (top + r.height > window.innerHeight - 8) top = y - r.height - 12;
-  tipEl.style.left = Math.max(4, left) + 'px';
-  tipEl.style.top = Math.max(4, top) + 'px';
+  tipW = r.width;
+  tipH = r.height;
+  placeTooltip(x, y);
+}
+
+/** 鼠标移动时只挪位置，不重建 innerHTML */
+export function moveTooltip(x, y) {
+  if (!tipEl || tipEl.style.display === 'none') return;
+  placeTooltip(x, y);
 }
 
 export function hideTooltip() {

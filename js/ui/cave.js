@@ -1,11 +1,12 @@
 // 洞府：炼丹 + 炼器
-import { RECIPES, BLUEPRINTS, QUALITY_NAMES, canAfford, pay, queueAlchemy, forge, upgradeCost, upgradeChance, reroll } from '../game/crafting.js';
+import { RECIPES, BLUEPRINTS, canAfford, pay, queueAlchemy, forge, upgradeCost, upgradeChance, reroll } from '../game/crafting.js';
 import { SPRITES } from '../data/sprites.js';
 import { Rng } from '../engine/rng.js';
-import { showTooltip, hideTooltip, toast } from './modal.js';
-import { SLOTS } from '../data/config.js';
+import { toast } from './modal.js';
 import { farmState, plant, harvest, plotInfo, SEEDS, water, clearPest, assignGuard } from '../game/farm.js';
 import { spiritName } from '../game/fate.js';
+import { itemPower } from '../game/state.js';
+import { bagSize } from '../game/ascend.js';
 
 const MAT_NAME = { iron: '玄铁', bone: '妖骨', jade: '寒玉', wood: '灵木', core: '妖丹', herb: '灵草' };
 
@@ -199,13 +200,14 @@ export function renderCave(game, el) {
     b.onclick = () => {
       const bp = BLUEPRINTS.find((x) => x.key === b.dataset.blue);
       const cost = { iron: bp.iron || 0, bone: bp.bone || 0, jade: bp.jade || 0, wood: bp.wood || 0, coin: bp.coin };
+      if (s.bag.length >= bagSize(s)) { toast('背包满了，先分解点东西'); return; }
       if (!canAfford(s, cost)) { toast('材料不足'); return; }
       pay(s, cost);
       const item = forge(s, bp, Math.max(1, s.floor), new Rng());
-      if (s.bag.length >= 60) { toast('背包满了，先分解点东西'); return; }
       s.bag.push(item);
       game.log(`铁锤真人出品：${item.name}（${item.power} 战力）`, 'l-loot');
       game.recompute();
+      game.markPanels('right');
       game.save();
       renderCave(game, el);
     };
@@ -222,9 +224,11 @@ export function renderCave(game, el) {
         item.plus = (item.plus || 0) + 1;
         const mul = 1 + (item.plus || 0) * 0.09;
         for (const k of Object.keys(item.base)) item.base[k] = Math.round(item.base[k] * mul * 10) / 10;
+        item.power = itemPower(item);
         game.log(`强化成功：${item.name} +${item.plus}`, 'l-good');
         game.countQuest('upgrade');
         game.state.stats.upgrade = (game.state.stats.upgrade || 0) + 1;
+        game.markPanels('left');
       } else {
         game.log(`强化失败，${item.name} 材料白瞎了。`, 'l-bad');
       }
@@ -238,10 +242,12 @@ export function renderCave(game, el) {
     b.onclick = () => {
       const item = s.equip[b.dataset.rr];
       if (!item) return;
+      if (!item.affixes || !Object.keys(item.affixes).length) { toast('这件装备没有可洗练的词缀'); return; }
       if (s.mats.core < 1) { toast('需要一枚妖丹'); return; }
       s.mats.core -= 1;
       if (reroll(item, new Rng())) {
         game.log(`洗练 ${item.name}，词缀有变。`, 'l-loot');
+        game.markPanels('left');
       }
       game.recompute();
       game.save();

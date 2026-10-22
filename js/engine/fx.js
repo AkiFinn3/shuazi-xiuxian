@@ -101,34 +101,32 @@ export class Fx {
   }
 
   draw(ctx) {
+    ctx.save();
     // 光柱
     for (const b of this.beams) {
       const k = b.life / b.maxLife;
       const h = 46 * Math.min(1, (1 - k) * 3 + 0.3);
-      ctx.save();
       ctx.globalAlpha = 0.18 + 0.35 * k;
       ctx.fillStyle = b.color;
       const w = b.rarity >= 4 ? 7 : 4;
       ctx.fillRect(b.x - w / 2, b.y - h, w, h);
       ctx.globalAlpha = 0.5 + 0.4 * k;
       ctx.fillRect(b.x - w / 2, b.y - 2, w, 2);
-      ctx.restore();
     }
     // 粒子
     for (const p of this.particles) {
-      ctx.save();
       ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
       ctx.fillStyle = p.color;
       ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
-      ctx.restore();
     }
     // 飘字
-    ctx.save();
     ctx.textAlign = 'center';
+    let font = '';
     for (const n of this.numbers) {
       const k = Math.max(0, n.life / n.maxLife);
       ctx.globalAlpha = k > 0.7 ? 1 : k / 0.7;
-      ctx.font = `${n.bold ? 'bold ' : ''}${n.size}px FusionPixel, monospace`;
+      const next = `${n.bold ? 'bold ' : ''}${n.size}px FusionPixel, monospace`;
+      if (next !== font) { ctx.font = next; font = next; }
       ctx.fillStyle = '#000';
       ctx.fillText(n.text, n.x + 1, n.y + 1);
       ctx.fillStyle = n.color;

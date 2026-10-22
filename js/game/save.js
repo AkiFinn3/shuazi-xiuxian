@@ -34,7 +34,7 @@ function migrate(data) {
   // 目前只有 v1；后续版本在这里做字段补全
   data.v = SAVE_VERSION;
   data.settings = Object.assign({
-    autoBattle: true, autoPick: true, autoSalvage: true,
+    autoBattle: true, autoEquip: true, autoSalvage: true,
     autoSalvageBelow: 'xuan', autoAdvance: true, volume: 0.5, sound: true,
   }, data.settings || {});
   data.stats = Object.assign({

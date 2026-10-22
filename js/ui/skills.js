@@ -1,5 +1,6 @@
 // 技能栏：显示冷却与解锁状态
 import { SKILLS, isUnlocked } from '../game/skills.js';
+import { toast } from './modal.js';
 
 let game = null;
 let el = null;

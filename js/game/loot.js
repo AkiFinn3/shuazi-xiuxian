@@ -7,6 +7,17 @@ import { bagSize } from './ascend.js';
 
 let nextId = 1;
 
+/** 读档 / 导入后同步 ID，避免新掉落与旧装备撞号 */
+export function syncItemIds(state) {
+  let max = 0;
+  const scan = (item) => {
+    if (item && Number.isFinite(item.id) && item.id > max) max = item.id;
+  };
+  (state.bag || []).forEach(scan);
+  Object.values(state.equip || {}).forEach(scan);
+  nextId = Math.max(nextId, max + 1);
+}
+
 /** 兵器图标池 */
 const ICON_KEYS = Object.keys(SPRITES.images).filter((k) => k.startsWith('icons/'));
 

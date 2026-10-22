@@ -22,7 +22,8 @@ export function runTribulation(game, realmIndex) {
     const need = tribulationPower(realmIndex);
     const dps = Math.max(6, stats.atk * stats.aspd * 1.25);
     const thunderHp = Math.round(260 + need * 0.35);
-    const thunderDps = 8 + realmIndex * 6 + need * 0.01;
+    const resist = Math.min(0.75, state.buffs?.tribResist || 0);
+    const thunderDps = (8 + realmIndex * 6 + need * 0.01) * (1 - resist);
 
     let elapsed = 0;
     let thunder = thunderHp;
@@ -40,6 +41,7 @@ export function runTribulation(game, realmIndex) {
         <p class="muted">九天雷云压顶。撑过去，你就是${realm.name}期修士；撑不过，修为散尽，再来。</p>
         <div class="divider"></div>
         <div class="kv"><span>渡劫要求</span><span class="gold">战力 ≥ ${need}（当前 ${stats.power}）</span></div>
+        ${resist > 0 ? `<div class="kv"><span>破境丹护体</span><span class="jade">雷劫伤害 -${Math.round(resist * 100)}%</span></div>` : ''}
         <div class="kv"><span>你的血量</span><span id="tbPlayer">${Math.round(playerHp)}</span></div>
         <div class="bar bar-hp" style="margin:4px 0 10px"><div class="bar-track"><i id="tbPlayerFill"></i></div></div>
         <div class="kv"><span>雷劫之威</span><span id="tbThunder">${thunder}</span></div>
@@ -123,25 +125,28 @@ export function runTribulation(game, realmIndex) {
 export async function doTribulation(game, realmIndex) {
   const state = game.state;
   const ok = await runTribulation(game, realmIndex);
+  if (state.buffs) state.buffs.tribResist = 0;
+  const realmName = (REALMS[realmIndex] || REALMS[REALMS.length - 1]).name;
   if (ok) {
     state.realm = realmIndex;
     state.stage = 0;
     state.exp = 0;
     state.pendingRealm = null;
-    state.hp = game.stats.maxHp;
     game.recompute();
-    game.log(`雷劫已过，${['炼气', '筑基', '金丹', '元婴', '化神', '炼虚', '合体', '大乘', '渡劫', '真仙'][realmIndex]}期！`, 'l-good');
+    state.hp = game.stats.maxHp;
+    game.log(`雷劫已过，${realmName}期！`, 'l-good');
     game.fx.addFlash('255,240,190', 0.7);
     game.fx.addShake(8);
     audio.fanfare();
-    toast(`渡劫成功 · ${['炼气', '筑基', '金丹', '元婴', '化神', '炼虚', '合体', '大乘', '渡劫', '真仙'][realmIndex]}期`, '#e8c46a');
+    toast(`渡劫成功 · ${realmName}期`, '#e8c46a');
   } else {
     // 失败：损失一半修为，稍后再来
     state.exp = Math.floor(state.exp * 0.5);
     state.pendingRealm = null;
-    state.hp = game.stats.maxHp;
     game.recompute();
-    game.log(`渡劫失败，修为散去一半。${realm.name}期需要战力 ${tribulationPower(realmIndex)}，再刷刷装备。`, 'l-bad');
+    state.hp = game.stats.maxHp;
+    game.log(`渡劫失败，修为散去一半。${realmName}期需要战力 ${tribulationPower(realmIndex)}，再刷刷装备。`, 'l-bad');
   }
+  game.markPanels('both');
   game.save();
 }

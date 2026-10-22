@@ -1,5 +1,5 @@
 // 自适应布局：移动端页签栏、抽屉、竖屏提示
-import { setRightTab, currentTab, isTouch } from './panels.js';
+import { setRightTab } from './panels.js';
 
 const TABS = [
   { key: 'equip', label: '装备', panel: 'left' },
@@ -17,6 +17,7 @@ const mqLandscape = window.matchMedia('(max-height: 560px) and (orientation: lan
 let tabbar, scrim, leftPanel, rightPanel;
 let activeKey = 'gear';
 let mobile = false;
+let drawerOpen = false;
 let rotateHinted = false;
 
 export function isMobileLayout() { return mobile; }
@@ -29,6 +30,7 @@ export function initLayout(game) {
   rightPanel = document.getElementById('rightPanel');
 
   buildTabbar();
+  if (scrim) scrim.onclick = closeDrawer;
   mqNarrow.addEventListener('change', applyMode);
   mqLandscape.addEventListener('change', applyMode);
   applyMode();
@@ -46,14 +48,15 @@ function buildTabbar() {
 
 function applyMode() {
   const narrow = mqNarrow.matches;
+  const landscape = mqLandscape.matches;
   mobile = narrow;
+  closeDrawer();
   if (narrow) {
     tabbar.hidden = false;
-    if (scrim) scrim.hidden = !mqLandscape.matches;
-    showPanel(activeKey, mqLandscape.matches);
+    showPanel(activeKey, landscape);
+    markActive();
   } else {
     tabbar.hidden = true;
-    if (scrim) scrim.hidden = true;
     leftPanel.classList.remove('mobile-active');
     rightPanel.classList.remove('mobile-active');
     rightPanel.style.transform = '';
@@ -64,14 +67,22 @@ function applyMode() {
 /** 切页签 */
 function onTab(key, right) {
   const landscape = mqLandscape.matches;
-  if (landscape && key === activeKey) {
+  if (!landscape) {
+    activeKey = key;
+    if (right) setRightTab(right);
+    showPanel(key, false);
+    markActive();
+    return;
+  }
+  // 横屏抽屉：再点当前页签（或遮罩）收起；点其它页签切换内容
+  if (drawerOpen && key === activeKey) {
     closeDrawer();
     return;
   }
   activeKey = key;
   if (right) setRightTab(right);
-  showPanel(key, landscape);
-  if (landscape) openDrawer();
+  showPanel(key, true);
+  openDrawer();
   markActive();
 }
 
@@ -92,14 +103,18 @@ function showPanel(key, landscape) {
 }
 
 function openDrawer() {
-  const panel = TABS.find((x) => x.key === activeKey).panel === 'left' ? leftPanel : rightPanel;
+  if (!mobile || !mqLandscape.matches) return;
+  const tab = TABS.find((x) => x.key === activeKey) || TABS[1];
+  const panel = tab.panel === 'left' ? leftPanel : rightPanel;
+  drawerOpen = true;
   panel.style.transform = 'none';
   if (scrim) scrim.hidden = false;
 }
 
 function closeDrawer() {
-  leftPanel.style.transform = '';
-  rightPanel.style.transform = '';
+  drawerOpen = false;
+  if (leftPanel) leftPanel.style.transform = '';
+  if (rightPanel) rightPanel.style.transform = '';
   if (scrim) scrim.hidden = true;
 }
 
@@ -127,5 +142,5 @@ function maybeRotateHint() {
 
 /** 供其它模块调用：当前是否用抽屉形态 */
 export function isDrawerMode() {
-  return mobile && mqLandscape.matches;
+  return mobile && mqLandscape.matches && drawerOpen;
 }

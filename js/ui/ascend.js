@@ -152,6 +152,7 @@ function finish(game, choice) {
   const r = ascend(s, choice);
   closeModal();
   game.recompute();
+  game.afterAscend();
   game.save();
   game.log(`飞升！获得 ${r.gain} 仙缘。这是你的第 ${r.count} 次飞升。`, 'l-good');
   if (r.ending) {

@@ -108,6 +108,7 @@ export function renderFate(game, el) {
     const r = addFateExp(s, 45);
     game.log(`培养本命法宝，器灵修为 +45${r && r.tierUp ? '，法宝进化了！' : ''}`, 'l-good');
     game.recompute();
+    game.markPanels('left');
     game.save();
     renderFate(game, el);
   };
@@ -126,6 +127,7 @@ export function renderFate(game, el) {
       if (absorbAffix(s, key, val)) {
         game.log(`器灵吸收了「${STAT_LABEL[key] || key}」，还剩 ${FATE_SLOTS - Object.keys(s.fate.affixes).length} 个空槽。`, 'l-loot');
         game.recompute();
+        game.markPanels('left');
         game.save();
         renderFate(game, el);
       } else {
@@ -175,6 +177,7 @@ function renderTypePicker(game, el) {
       const name = FATE_TYPES[s.fate.type].name;
       game.log(`器灵苏醒：${name}。它自称「${s.fate.name}」。`, 'l-good');
       game.recompute();
+      game.markPanels('both');
       game.save();
       renderFate(game, el);
     };

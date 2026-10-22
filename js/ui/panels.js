@@ -1,8 +1,8 @@
 // 侧边面板：装备栏、属性、背包
-import { SLOTS, RARITIES, STAT_LABEL, BALANCE, CHAPTERS } from '../data/config.js';
-import { deriveStats, realmLabel, expNeed, nextRealmFloor } from '../game/state.js';
-import { rarityIndex, isBetter, salvageValue } from '../game/loot.js';
-import { showTooltip, hideTooltip, toast } from './modal.js';
+import { SLOTS, RARITIES, STAT_LABEL } from '../data/config.js';
+import { realmLabel, expNeed, nextRealmFloor } from '../game/state.js';
+import { rarityIndex, isBetter } from '../game/loot.js';
+import { showTooltip, moveTooltip, hideTooltip, toast } from './modal.js';
 import { SPRITES } from '../data/sprites.js';
 import { renderCave } from './cave.js';
 import { renderSect } from './sect.js';
@@ -29,6 +29,9 @@ const MAT_NAME = {
 let game = null;
 let leftPanel, rightPanel;
 let rightTab = 'gear';
+const dirty = { left: false, right: false };
+const LIVE_TABS = new Set(['cave', 'sect', 'fate', 'dungeon', 'ascend']);
+let preview = { src: '', image: null };
 
 /** 是否触屏设备（没有 hover） */
 export function isTouch() {
@@ -39,20 +42,68 @@ export function buildPanels(g) {
   game = g;
   leftPanel = document.getElementById('leftPanel');
   rightPanel = document.getElementById('rightPanel');
+  dirty.left = dirty.right = false;
   renderLeft();
   renderRight();
 }
 
 export function refreshPanels() {
   if (!game) return;
+  dirty.left = dirty.right = false;
   renderLeft();
   renderRight();
+}
+
+/** 标记面板需要重绘，由主循环合并刷新 */
+export function markPanelsDirty(which = 'both') {
+  if (which === 'left' || which === 'both') dirty.left = true;
+  if (which === 'right' || which === 'both') dirty.right = true;
+}
+
+/** 合并刷新的入口：每个周期最多重建一次 DOM */
+export function flushPanels() {
+  if (!game) return;
+  if (dirty.left) { dirty.left = false; renderLeft(); }
+  if (dirty.right) {
+    dirty.right = false;
+    // 背包内容只在背包页完整重建；其它页只更新页签计数，
+    // 避免挂机掉落时反复重建洞府/宗门面板。
+    if (rightTab === 'gear') renderRight();
+    else updateBagTab();
+  }
+}
+
+function updateBagTab() {
+  if (!rightPanel) return;
+  const tab = rightPanel.querySelector('.tab[data-tab="gear"]');
+  if (tab) tab.textContent = `背包 ${game.state.bag.length}/${bagSize(game.state)}`;
+}
+
+/**
+ * 定时刷新右栏实时数据（炼丹倒计时、灵田成熟）。
+ * 只重建内容区并保留滚动位置，避免打断阅读和误触。
+ */
+export function refreshLivePanel() {
+  if (!game || !rightPanel || !LIVE_TABS.has(rightTab)) return;
+  if (!rightPanel.offsetWidth) return;
+  const modal = document.getElementById('modalRoot');
+  if (modal && !modal.hidden) return;
+  const active = document.activeElement;
+  if (active && rightPanel.contains(active) && /^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName)) return;
+  const body = rightPanel.querySelector('#rightBody');
+  if (!body) return;
+  const scroll = rightPanel.scrollTop;
+  renderRightBody(body);
+  rightPanel.scrollTop = scroll;
 }
 
 /** 切换右侧标签页（并立即重绘） */
 export function setRightTab(tab) {
   rightTab = tab;
-  if (game) renderRight();
+  if (game) {
+    renderRight();
+    rightPanel.scrollTop = 0;
+  }
 }
 
 /** 当前右侧标签页 */
@@ -64,6 +115,7 @@ export function currentTab() {
 function renderLeft() {
   const s = game.state;
   const stats = game.stats;
+  const scroll = leftPanel.scrollTop;
   const bodyHtml = SLOTS.map((slot) => {
     const item = s.equip[slot.key];
     const rarity = item ? RARITIES[rarityIndex(item.rarity)] : null;
@@ -134,23 +186,11 @@ function renderLeft() {
       <div><span class="k">死亡</span><span>${s.stats.deaths}</span></div>
     </div>`;
 
-  // 身体预览
+  leftPanel.scrollTop = scroll;
+
+  // 身体预览（同一外观只创建一次 Image）
   const c = leftPanel.querySelector('#bodyPreview');
-  if (c) {
-    const ctx = c.getContext('2d');
-    ctx.clearRect(0, 0, c.width, c.height);
-    const meta = SPRITES.anims[`hero/${s.appearance}_idle`];
-    if (meta) {
-      const img = new Image();
-      img.onload = () => {
-        ctx.imageSmoothingEnabled = false;
-        const [cw, ch] = meta.cell;
-        const scale = Math.min(c.width / cw, c.height / ch);
-        ctx.drawImage(img, 0, 0, cw, ch, (c.width - cw * scale) / 2, c.height - ch * scale, cw * scale, ch * scale);
-      };
-      img.src = meta.src;
-    }
-  }
+  if (c) drawBodyPreview(c, s.appearance);
 
   // 点击槽位 = 卸下
   leftPanel.querySelectorAll('.slot[data-slot]').forEach((el) => {
@@ -179,6 +219,7 @@ function renderLeft() {
 /* ---------------- 右：背包 / 洞府 / 宗门 ---------------- */
 function renderRight() {
   const s = game.state;
+  const scroll = rightPanel.scrollTop;
   rightPanel.innerHTML = `
     <div class="tabs">
       <div class="tab ${rightTab === 'gear' ? 'on' : ''}" data-tab="gear">背包 ${s.bag.length}/${bagSize(s)}</div>
@@ -190,17 +231,26 @@ function renderRight() {
     </div>
     <div id="rightBody"></div>`;
 
-  const body = rightPanel.querySelector('#rightBody');
+  renderRightBody(rightPanel.querySelector('#rightBody'));
+  rightPanel.scrollTop = scroll;
+
+  rightPanel.querySelectorAll('.tab').forEach((el) => {
+    el.onclick = () => {
+      rightTab = el.dataset.tab;
+      renderRight();
+      rightPanel.scrollTop = 0;
+    };
+  });
+}
+
+function renderRightBody(body) {
+  if (!body) return;
   if (rightTab === 'cave') renderCave(game, body);
   else if (rightTab === 'sect') renderSect(game, body);
   else if (rightTab === 'fate') renderFate(game, body);
   else if (rightTab === 'dungeon') renderDungeon(game, body);
   else if (rightTab === 'ascend') renderAscend(game, body);
   else renderBag(body);
-
-  rightPanel.querySelectorAll('.tab').forEach((el) => {
-    el.onclick = () => { rightTab = el.dataset.tab; renderRight(); };
-  });
 }
 
 function renderBag(body) {
@@ -242,7 +292,14 @@ function renderBag(body) {
     <div>${mats}</div>`;
 
   const chk = body.querySelector('#chkAutoSalvage');
-  if (chk) chk.onchange = () => { game.state.settings.autoSalvage = chk.checked; game.save(); };
+  if (chk) {
+    chk.onchange = () => {
+      game.state.settings.autoSalvage = chk.checked;
+      const foot = document.getElementById('tglAutoSalvage');
+      if (foot) foot.checked = chk.checked;
+      game.save();
+    };
+  }
   const sel = body.querySelector('#selSalvageLevel');
   if (sel) sel.onchange = () => { game.state.settings.autoSalvageBelow = sel.value; game.save(); };
 
@@ -251,14 +308,21 @@ function renderBag(body) {
   const sl = body.querySelector('#btnSalvageLow');
   if (sl) sl.onclick = () => { game.salvageBelow(); refreshPanels(); };
   const sa = body.querySelector('#btnSalvageAll');
-  if (sa) sa.onclick = () => { game.salvageAll(); refreshPanels(); };
+  if (sa) {
+    sa.onclick = () => {
+      if (!game.state.bag.length) { toast('背包是空的'); return; }
+      if (!confirm(`确定分解背包里的 ${game.state.bag.length} 件装备吗？`)) return;
+      game.salvageAll();
+      refreshPanels();
+    };
+  }
 
   // 格子交互
   body.querySelectorAll('.cell.has').forEach((el) => {
     const item = game.state.bag.find((x) => x.id === Number(el.dataset.id));
     if (!item) return;
     el.onmouseenter = (e) => showTooltip(itemTooltip(item), e.clientX, e.clientY);
-    el.onmousemove = (e) => showTooltip(itemTooltip(item), e.clientX, e.clientY);
+    el.onmousemove = (e) => moveTooltip(e.clientX, e.clientY);
     el.onmouseleave = hideTooltip;
     el.onclick = () => {
       // 触屏：弹底部详情层（hover 气泡在触屏上没有意义）
@@ -277,6 +341,32 @@ function renderBag(body) {
 }
 
 /* ---------------- 物品展示 ---------------- */
+function drawBodyPreview(canvas, appearance) {
+  const meta = SPRITES.anims[`hero/${appearance}_idle`];
+  if (!meta) return;
+  const draw = (image, target) => {
+    const ctx = target.getContext('2d');
+    ctx.clearRect(0, 0, target.width, target.height);
+    ctx.imageSmoothingEnabled = false;
+    const [cw, ch] = meta.cell;
+    const scale = Math.min(target.width / cw, target.height / ch);
+    ctx.drawImage(image, 0, 0, cw, ch,
+      (target.width - cw * scale) / 2, target.height - ch * scale, cw * scale, ch * scale);
+  };
+  if (preview.src !== meta.src) {
+    preview = { src: meta.src, image: new Image() };
+    const image = preview.image;
+    image.onload = () => {
+      const current = leftPanel.querySelector('#bodyPreview');
+      if (current && preview.image === image) draw(image, current);
+    };
+    image.src = meta.src;
+  }
+  if (preview.image && preview.image.complete && preview.image.naturalWidth) {
+    draw(preview.image, canvas);
+  }
+}
+
 function iconHtml(item, slotDef) {
   if (item.slot === 'weapon' && item.icon) {
     return `<img src="${item.icon}" alt="">`;

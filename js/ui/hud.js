@@ -4,6 +4,7 @@ import { CHAPTERS } from '../data/config.js';
 import { isMobile } from './mobile.js';
 
 const el = {};
+const last = {};
 let game = null;
 
 export function initHud(g) {
@@ -22,28 +23,41 @@ export function initHud(g) {
   refreshHud();
 }
 
+function text(key, node, value) {
+  if (!node || last[key] === value) return;
+  last[key] = value;
+  node.textContent = value;
+}
+
+function width(key, node, value) {
+  if (!node || last[key] === value) return;
+  last[key] = value;
+  node.style.width = value;
+}
+
 export function refreshHud() {
   if (!game) return;
   const s = game.state;
   const stats = game.stats;
-  el.name.textContent = s.name;
-  el.title.textContent = s.title || '';
-  el.realm.textContent = realmLabel(s);
-  el.level.textContent = 'Lv.' + levelIndex(s);
+  text('name', el.name, s.name);
+  text('title', el.title, s.title || '');
+  text('realm', el.realm, realmLabel(s));
+  text('level', el.level, 'Lv.' + levelIndex(s));
 
   const need = expNeed(s);
-  el.xpFill.style.width = Math.min(100, (s.exp / need) * 100) + '%';
-  el.xpText.textContent = `${Math.floor(s.exp)}/${need}`;
+  width('xpFill', el.xpFill, Math.min(100, (s.exp / need) * 100) + '%');
+  text('xpText', el.xpText, `${Math.floor(s.exp)}/${need}`);
 
   const hp = Math.max(0, s.hp);
-  el.hpFill.style.width = Math.min(100, (hp / stats.maxHp) * 100) + '%';
-  el.hpText.textContent = `${Math.ceil(hp)}/${stats.maxHp}`;
+  width('hpFill', el.hpFill, Math.min(100, (hp / stats.maxHp) * 100) + '%');
+  text('hpText', el.hpText, `${Math.ceil(hp)}/${stats.maxHp}`);
 
-  el.stone.textContent = fmt(s.stats.stone || s.coin);
-  el.power.textContent = fmt(stats.power);
+  // 顶栏显示可花费余额，而不是累计获得量
+  text('stone', el.stone, fmt(s.coin));
+  text('power', el.power, fmt(stats.power));
   const chapter = CHAPTERS[Math.floor((s.floor - 1) / 10) % CHAPTERS.length];
   // 窄屏空间紧张，秘境只显示层数
-  el.floor.textContent = isMobile() ? `${s.floor}层` : `${s.floor}层 ${chapter.name}`;
+  text('floor', el.floor, isMobile() ? `${s.floor}层` : `${s.floor}层 ${chapter.name}`);
 }
 
 function fmt(n) {

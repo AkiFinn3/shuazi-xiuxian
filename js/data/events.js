@@ -22,7 +22,7 @@ export const EVENTS = [
           s.coin -= 200;
           if (Math.random() < 0.55) {
             const item = rollItem(rng, Math.max(1, s.floor - 2), s.stats.luck || 0);
-            s.bag.push(item);
+            game.addLoot(item);
             return { text: `他颤巍巍递来一件「${item.name}」：「多谢道友！」` };
           }
           return { text: '他千恩万谢地走了，什么也没给。' };
@@ -45,7 +45,7 @@ export const EVENTS = [
           const price = 150 + item.power * 2;
           if (s.coin < price) return { text: `「${item.name}」，标价 ${price} 灵石。你摸了摸口袋，走了。` };
           s.coin -= price;
-          s.bag.push(item);
+          game.addLoot(item);
           return { text: `你买下了一「${item.name}」，花了 ${price} 灵石。` };
         },
       },
@@ -90,7 +90,7 @@ export const EVENTS = [
           const s = game.state;
           if (Math.random() < 0.5) {
             const item = rollItem(rng, s.floor + 2, 15);
-            s.bag.push(item);
+            game.addLoot(item);
             return { text: `洞中石台上躺着一件「${item.name}」，品相极好。` };
           }
           const loss = Math.floor(s.coin * 0.15);
@@ -145,7 +145,7 @@ export const EVENTS = [
           const win = Math.random() < 0.35 + s.stats.power / 4000;
           if (win) {
             const item = rollItem(rng, s.floor + 3, 20);
-            s.bag.push(item);
+            game.addLoot(item);
             s.exp += Math.floor(200 + s.floor * 40);
             return { text: `心魔碎了，化作一枚「${item.name}」和一股暖流。` };
           }

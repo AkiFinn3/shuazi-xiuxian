@@ -4,9 +4,9 @@ import { Fx } from './engine/fx.js';
 import { Rng } from './engine/rng.js';
 import { audio } from './engine/audio.js';
 import { VIEW, BALANCE, RARITIES, CHAPTERS, REALMS, SLOTS } from './data/config.js';
-import { createState, deriveStats, addExp, healFull, realmLabel, normalizeState } from './game/state.js';
+import { createState, deriveStats, addExp, realmLabel, normalizeState } from './game/state.js';
 import { Combat } from './game/combat.js';
-import { rollItem, rarityIndex, isBetter, salvageValue } from './game/loot.js';
+import { rollItem, rarityIndex, isBetter, salvageValue, syncItemIds } from './game/loot.js';
 import { tickAlchemy, finishAlchemy, reroll } from './game/crafting.js';
 import { saveGame, loadGame, clearGame, exportSave, importSave, offlineReward } from './game/save.js';
 import { doTribulation } from './game/tribulation.js';
@@ -16,17 +16,19 @@ import { randomEvent } from './data/events.js';
 import { checkAchievements } from './data/achievements.js';
 import { FATE_STORIES, storyUnlocked } from './data/fate_stories.js';
 import { showFateStory } from './ui/fate_story.js';
-import { bagSize, canAscend } from './game/ascend.js';
+import { bagSize } from './game/ascend.js';
 import { showEvent } from './ui/events.js';
 import { nameReactions } from './game/easter.js';
 import { openModal, closeModal, toast } from './ui/modal.js';
 import { openCreation } from './ui/creation.js';
 import { initHud, refreshHud } from './ui/hud.js';
-import { buildPanels, refreshPanels, currentTab, isTouch } from './ui/panels.js';
+import { buildPanels, refreshPanels, isTouch, markPanelsDirty, flushPanels, refreshLivePanel } from './ui/panels.js';
 import { initLayout, isMobileLayout } from './ui/layout.js';
 import { buildSkillBar, refreshSkillBar } from './ui/skills.js';
 import { logLine } from './ui/log.js';
 import { DEATH_QUIPS, QUIPS } from './data/names.js';
+import { preload, preloadAnim } from './engine/assets.js';
+import { sceneAssetKeys } from './game/scene.js';
 
 class Game {
   constructor() {
@@ -43,6 +45,10 @@ class Game {
     this.hudTimer = 0;
     this.quipTimer = 0;
     this.paused = false;
+    this.flushTimer = 0;
+    this.uiBound = false;
+    this.tribulationActive = false;
+    this.skipSave = false;
     this.loop = new Loop((dt) => this.update(dt), () => this.render());
   }
 
@@ -69,7 +75,9 @@ class Game {
   startGame(state) {
     this.state = normalizeState(state);
     ensureQuests(this.state);
-    this.stats = deriveStats(state);
+    syncItemIds(this.state);
+    this.stats = deriveStats(this.state);
+    this.state.hp = Math.max(1, Math.min(this.state.hp || this.stats.maxHp, this.stats.maxHp));
     this.rng = new Rng(Date.now() & 0xffffffff);
     this.combat = new Combat(this);
     document.getElementById('app').hidden = false;
@@ -78,6 +86,10 @@ class Game {
     buildSkillBar(this);
     initLayout(this);
     this.bindUi();
+
+    audio.setEnabled(this.state.settings.sound !== false);
+    audio.setVolume(this.state.settings.volume ?? 0.5);
+    this.preloadForFloor(this.state.floor);
 
     // 移动端降级：少粒子、关震屏
     this.lowFx = isMobileLayout() || isTouch();
@@ -89,7 +101,25 @@ class Game {
     logLine(`${state.name} 来到青云山脚。`, 'l-good');
   }
 
+  /** 预载当前章节的场景、主角与妖兽资源 */
+  preloadForFloor(floor) {
+    const chapterIndex = Math.floor((floor - 1) / 10) % CHAPTERS.length;
+    const chapter = CHAPTERS[chapterIndex];
+    preload(sceneAssetKeys(chapterIndex));
+    const anims = [];
+    for (const type of chapter.mobs || []) {
+      for (const a of ['idle', 'move', 'attack', 'hurt', 'death']) anims.push(`mob/${type}_${a}`);
+    }
+    for (const a of ['idle', 'move', 'attack_a', 'hurt', 'death']) anims.push(`boss/${chapter.boss}_${a}`);
+    for (const a of ['idle', 'walk', 'attack', 'combo1', 'combo2', 'combo3', 'cast', 'hurt', 'death', 'dash']) {
+      anims.push(`hero/${this.state.appearance}_${a}`);
+    }
+    preloadAnim(anims);
+  }
+
   bindUi() {
+    if (this.uiBound) return;
+    this.uiBound = true;
     const s = this.state;
     const tgl = (id, key) => {
       const el = document.getElementById(id);
@@ -101,7 +131,7 @@ class Game {
       };
     };
     tgl('tglAutoBattle', 'autoBattle');
-    tgl('tglAutoPick', 'autoPick');
+    tgl('tglAutoEquip', 'autoEquip');
     tgl('tglAutoSalvage', 'autoSalvage');
 
     document.getElementById('btnSettings').onclick = () => this.showSettings();
@@ -109,24 +139,48 @@ class Game {
 
     // 触屏：点画面暂停/继续
     this.canvas.addEventListener('click', () => {
-      if (!isTouch()) return;
-      s.settings.autoBattle = !s.settings.autoBattle;
-      const tgl = document.getElementById('tglAutoBattle');
-      if (tgl) tgl.checked = s.settings.autoBattle;
-      this.log(`自动战斗 ${s.settings.autoBattle ? '开启' : '暂停'}`, 'l-dim');
-      this.save();
+      if (isTouch()) this.toggleAutoBattle();
     });
 
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && !document.getElementById('modalRoot').hidden === false) return;
-      if (e.code === 'Space') {
-        e.preventDefault();
-        s.settings.autoBattle = !s.settings.autoBattle;
-        document.getElementById('tglAutoBattle').checked = s.settings.autoBattle;
-        this.log(`自动战斗 ${s.settings.autoBattle ? '开启' : '暂停'}`, 'l-dim');
-        this.save();
-      }
+      if (e.code !== 'Space' || e.repeat) return;
+      if (!document.getElementById('modalRoot').hidden) return;
+      const tag = (e.target && e.target.tagName) || '';
+      if (/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(tag) || (e.target && e.target.isContentEditable)) return;
+      e.preventDefault();
+      this.toggleAutoBattle();
     });
+
+    // 切后台/关闭页面时立刻落盘，避免丢最后一段进度
+    window.addEventListener('pagehide', () => this.save());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') this.save();
+    });
+  }
+
+  /** 同一时间只允许一场渡劫；有其它弹窗时留到下次修为增长再触发 */
+  startTribulation(realmIndex) {
+    if (realmIndex == null || this.tribulationActive) return;
+    const root = document.getElementById('modalRoot');
+    if (root && !root.hidden) return;
+    this.tribulationActive = true;
+    this.log(`天劫将至，需渡劫方可踏入${REALMS[realmIndex].name}期。`, 'l-bad');
+    this.audio.thunder();
+    doTribulation(this, realmIndex).finally(() => {
+      this.tribulationActive = false;
+    });
+  }
+
+  toggleAutoBattle(force) {
+    const s = this.state;
+    if (!s) return;
+    s.settings.autoBattle = typeof force === 'boolean' ? force : !s.settings.autoBattle;
+    for (const id of ['tglAutoBattle', 'setBattle']) {
+      const el = document.getElementById(id);
+      if (el) el.checked = s.settings.autoBattle;
+    }
+    this.log(`自动战斗 ${s.settings.autoBattle ? '开启' : '暂停'}`, 'l-dim');
+    this.save();
   }
 
   /* ---------------- 循环 ---------------- */
@@ -173,30 +227,34 @@ class Game {
       refreshSkillBar();
     }
 
+    // 面板脏标记合并刷新，避免每次掉落都重建 DOM
+    this.flushTimer += dt;
+    if (this.flushTimer > 0.35) {
+      this.flushTimer = 0;
+      flushPanels();
+    }
+
     // 器灵小故事
     this.storyTimer = (this.storyTimer || 0) + dt;
     if (this.storyTimer > 2) {
       this.storyTimer = 0;
-      const stories = this.state.fateStories = this.state.fateStories || {};
-      for (const st of FATE_STORIES) {
-        if (stories[st.id]) continue;
-        if (storyUnlocked(this.state, st)) {
+      if (!this.paused && document.getElementById('modalRoot').hidden) {
+        const stories = this.state.fateStories = this.state.fateStories || {};
+        for (const st of FATE_STORIES) {
+          if (stories[st.id] || !storyUnlocked(this.state, st)) continue;
           stories[st.id] = Date.now();
-          if (!this.paused && document.getElementById('modalRoot').hidden) {
-            this.log(`器灵手记：${st.title}`, 'l-dim');
-            showFateStory(this, st);
-          }
+          this.log(`器灵手记：${st.title}`, 'l-dim');
+          showFateStory(this, st);
+          break;
         }
       }
     }
 
-    // 洞府面板定时刷新（灵田成熟、丹炉倒计时）
+    // 洞府/宗门面板定时刷新（灵田成熟、丹炉倒计时），保留滚动位置
     this.panelTimer = (this.panelTimer || 0) + dt;
     if (this.panelTimer > 4) {
       this.panelTimer = 0;
-      if (currentTab() === 'cave' && document.getElementById('modalRoot').hidden) {
-        refreshPanels();
-      }
+      refreshLivePanel();
     }
 
     // 成就检查
@@ -271,17 +329,14 @@ class Game {
       this.log(`修为精进：${lv.label}`, 'l-good');
       this.audio.fanfare();
     }
+    if (res.levels.length) markPanelsDirty('left');
     if (res.realmUp) {
       this.log(`境界突破！${realmLabel(s)}`, 'l-good');
       this.fx.addFlash('255,220,150', 0.6);
       this.audio.fanfare();
       toast(`突破！${realmLabel(s)}`, '#e8c46a');
     }
-    if (res.tribulation) {
-      this.log(`天劫将至，需渡劫方可踏入${REALMS[res.tribulation].name}期。`, 'l-bad');
-      this.audio.thunder();
-      doTribulation(this, res.tribulation);
-    }
+    if (res.tribulation) this.startTribulation(res.tribulation);
     if (res.blocked) {
       const need = REALMS[s.realm + 1] ? REALMS[s.realm + 1].need : 0;
       this.log(`境界遇到瓶颈，需要通关第 ${need} 层。`, 'l-dim');
@@ -309,6 +364,7 @@ class Game {
           this.fx.addFlash('255,230,170', 0.5);
           this.audio.fanfare();
           toast('本命法宝进化！', '#ffb347');
+          markPanelsDirty('left');
         } else if (r.levelUp) {
           this.log(`器灵等级提升：Lv.${r.level}`, 'l-good');
         }
@@ -333,20 +389,21 @@ class Game {
     this.fx.beam(enemy.x, enemy.y - 4, rIdx);
 
     const eq = s.equip[item.slot];
-    if (isBetter(item, eq, 1.02)) {
-      // 自动换装
+    if (s.settings.autoEquip !== false && isBetter(item, eq, 1.02)) {
+      // 自动换装：换下来的旧装备优先进包，包满则分解
       if (eq) {
-        if (s.settings.autoSalvage && this.belowSalvageLevel(eq)) this.salvageItem(eq.id, true);
-        else s.bag.push(eq);
+        if (s.settings.autoSalvage && this.belowSalvageLevel(eq)) this.grantSalvage(eq, true);
+        else if (s.bag.length < bagSize(s)) s.bag.push(eq);
+        else this.grantSalvage(eq, true);
       }
       s.equip[item.slot] = item;
-      this.log(`自动装备：${rarity.color === '#b9c0cc' ? '' : ''}[${rarity.name}] ${item.name}`, 'l-loot');
+      this.log(`自动装备：[${rarity.name}] ${item.name}`, 'l-loot');
       this.audio.loot(rIdx);
     } else if (s.settings.autoSalvage && this.belowSalvageLevel(item) && !isBetter(item, eq, 1.0)) {
-      this.salvageItem(item.id, false);
+      this.grantSalvage(item, true);
     } else if (s.bag.length >= bagSize(s)) {
-      this.salvageItem(item.id, true);
-      this.log('背包满了，只能分解。', 'l-dim');
+      this.grantSalvage(item, true);
+      this.log('背包满了，掉落的装备已自动分解。', 'l-dim');
     } else {
       s.bag.push(item);
       this.log(`获得 [${rarity.name}] ${item.name}`, 'l-loot');
@@ -356,6 +413,36 @@ class Game {
       }
     }
     this.recompute();
+    markPanelsDirty('both');
+  }
+
+  /** 把一件不在背包里的装备直接分解（新掉落用） */
+  grantSalvage(item, silent = false) {
+    if (!item) return;
+    const s = this.state;
+    const mats = salvageValue(item);
+    for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] || 0) + v;
+    s.stats.salvaged++;
+    if (!silent) {
+      const rarity = RARITIES[rarityIndex(item.rarity)];
+      this.log(`分解 [${rarity.name}] ${item.name} → 玄铁+${mats.iron}`, 'l-dim');
+      this.audio.click();
+    }
+    markPanelsDirty('right');
+  }
+
+  /** 事件/任务等外部来源入包，满包时安全分解 */
+  addLoot(item) {
+    const s = this.state;
+    if (s.bag.length >= bagSize(s)) {
+      this.grantSalvage(item, true);
+      const rarity = RARITIES[rarityIndex(item.rarity)];
+      this.log(`背包满了，[${rarity.name}] ${item.name} 已自动分解。`, 'l-dim');
+      return false;
+    }
+    s.bag.push(item);
+    markPanelsDirty('right');
+    return true;
   }
 
   belowSalvageLevel(item) {
@@ -376,9 +463,29 @@ class Game {
   onFloorChanged(floor) {
     const chapter = CHAPTERS[Math.floor((floor - 1) / 10) % CHAPTERS.length];
     this.log(`进入第 ${floor} 层 · ${chapter.name}`, 'l-good');
+    this.preloadForFloor(floor);
+    markPanelsDirty('right');
     if (floor % BALANCE.bossEvery === 0) {
       this.log('前方有守关者，谨慎。', 'l-bad');
     }
+  }
+
+  /** 飞升后重置战场并回到第一章 */
+  afterAscend() {
+    const c = this.combat;
+    if (c) {
+      c.wavesDone = 0;
+      c.waveActive = false;
+      c.waveTimer = 1;
+      c._bossDefeated = false;
+      c.boss = null;
+      c.enemies.length = 0;
+      c.hero.x = 120;
+      c.hero.state = 'idle';
+      c.scroll = 0;
+    }
+    this.preloadForFloor(this.state.floor);
+    markPanelsDirty('both');
   }
 
   /* ---------------- 丹药 ---------------- */
@@ -389,10 +496,7 @@ class Game {
     if (pill.effect.exp) {
       const res = addExp(s, pill.exp);
       for (const lv of res.levels) this.log(`修为精进：${lv.label}`, 'l-good');
-      if (res.tribulation) {
-        this.log('天劫将至。', 'l-bad');
-        doTribulation(this, res.tribulation);
-      }
+      if (res.tribulation) this.startTribulation(res.tribulation);
     }
     if (pill.effect.atkPct) {
       s.buffs.atkUntil = now + (pill.effect.duration || 900) * 1000;
@@ -401,6 +505,10 @@ class Game {
     if (pill.effect.luck) {
       s.buffs.luckUntil = now + (pill.effect.duration || 900) * 1000;
       s.buffs.luck = pill.effect.luck;
+    }
+    if (pill.effect.tribulation) {
+      s.buffs.tribResist = Math.min(0.75, (s.buffs.tribResist || 0) + pill.effect.tribulation);
+      this.log(`破境丹护体：下次渡劫伤害 -${Math.round(s.buffs.tribResist * 100)}%。`, 'l-good');
     }
     if (pill.effect.reroll) {
       const item = Object.values(s.equip).find((i) => i && Object.keys(i.affixes || {}).length);
@@ -413,6 +521,7 @@ class Game {
       }
     }
     this.recompute();
+    markPanelsDirty('both');
     this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
     toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
   }
@@ -439,6 +548,7 @@ class Game {
     }
     const chapter = CHAPTERS[Math.floor((target - 1) / 10) % CHAPTERS.length];
     this.log(`前往第 ${target} 层 · ${chapter.name}`, 'l-good');
+    this.preloadForFloor(target);
     this.save();
     refreshPanels();
   }
@@ -454,6 +564,7 @@ class Game {
     s.equip[item.slot] = item;
     if (old) s.bag.push(old);
     this.recompute();
+    markPanelsDirty('both');
     this.audio.click();
   }
 
@@ -473,6 +584,7 @@ class Game {
       }
     }
     this.recompute();
+    markPanelsDirty('both');
     this.log(changed ? `一键最优：更换了 ${changed} 件装备。` : '一键最优：当前已是最优。', changed ? 'l-good' : 'l-dim');
   }
 
@@ -480,16 +592,9 @@ class Game {
     const s = this.state;
     const idx = s.bag.findIndex((x) => x.id === id);
     if (idx < 0) return;
-    const item = s.bag[idx];
-    s.bag.splice(idx, 1);
-    const mats = salvageValue(item);
-    for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] || 0) + v;
-    s.stats.salvaged++;
-    if (!silent) {
-      const rarity = RARITIES[rarityIndex(item.rarity)];
-      this.log(`分解 [${rarity.name}] ${item.name} → 玄铁+${mats.iron}`, 'l-dim');
-      this.audio.click();
-    }
+    const [item] = s.bag.splice(idx, 1);
+    this.grantSalvage(item, silent);
+    markPanelsDirty('both');
   }
 
   salvageBelow() {
@@ -521,7 +626,12 @@ class Game {
   }
 
   save() {
-    if (this.state) saveGame(this.state);
+    if (this.state && !this.skipSave) saveGame(this.state);
+  }
+
+  /** 供 UI 模块标记面板需要重绘 */
+  markPanels(which = 'both') {
+    markPanelsDirty(which);
   }
 
   /* ---------------- 弹窗 ---------------- */
@@ -542,13 +652,23 @@ class Game {
         const s = this.state;
         s.coin += reward.coin;
         s.stats.stone += reward.coin;
+        s.stats.kills += reward.kills;
         countQuest(s, 'kills', reward.kills);
         const res = addExp(s, reward.exp);
         for (const lv of res.levels) this.log(`修为精进：${lv.label}`, 'l-good');
+        if (res.realmUp) {
+          this.log(`境界突破！${realmLabel(s)}`, 'l-good');
+          toast(`突破！${realmLabel(s)}`, '#e8c46a');
+        }
+        if (res.blocked) {
+          const need = REALMS[s.realm + 1] ? REALMS[s.realm + 1].need : 0;
+          this.log(`境界遇到瓶颈，需要通关第 ${need} 层。`, 'l-dim');
+        }
         this.recompute();
-        refreshHud();
-        refreshPanels();
+        markPanelsDirty('both');
+        this.save();
         closeModal();
+        if (res.tribulation) setTimeout(() => this.startTribulation(res.tribulation), 60);
       };
     });
   }
@@ -561,7 +681,7 @@ class Game {
         <div class="divider"></div>
         <div class="row mb8">
           <label class="tgl"><input type="checkbox" id="setBattle" ${s.settings.autoBattle ? 'checked' : ''}><span>自动战斗</span></label>
-          <label class="tgl"><input type="checkbox" id="setPick" ${s.settings.autoPick ? 'checked' : ''}><span>自动拾取</span></label>
+          <label class="tgl"><input type="checkbox" id="setEquip" ${s.settings.autoEquip !== false ? 'checked' : ''}><span>自动装备</span></label>
           <label class="tgl"><input type="checkbox" id="setSalv" ${s.settings.autoSalvage ? 'checked' : ''}><span>自动分解</span></label>
         </div>
         <div class="row mb8">
@@ -584,9 +704,14 @@ class Game {
         el.onchange = () => { s.settings[key] = el.checked; this.save(); };
       };
       bind('#setBattle', 'autoBattle');
-      bind('#setPick', 'autoPick');
+      bind('#setEquip', 'autoEquip');
       bind('#setSalv', 'autoSalvage');
-      bind('#setSound', 'sound');
+      const soundEl = box.querySelector('#setSound');
+      soundEl.onchange = () => {
+        s.settings.sound = soundEl.checked;
+        audio.setEnabled(s.settings.sound);
+        this.save();
+      };
       box.querySelector('#setVol').oninput = (e) => {
         s.settings.volume = e.target.value / 100;
         audio.setVolume(s.settings.volume);
@@ -603,17 +728,16 @@ class Game {
         const text = box.querySelector('#saveBox').value.trim();
         const data = importSave(text);
         if (!data) { toast('存档码无效'); return; }
-        clearGame();
-        this.state = data;
-        this.stats = deriveStats(data);
-        this.combat = new Combat(this);
-        refreshHud();
-        refreshPanels();
+        // 走完整启动流程，确保旧存档字段、物品 ID、面板和资源都正确初始化
+        this.skipSave = true;
+        saveGame(normalizeState(data));
         toast('存档已导入');
         closeModal();
+        setTimeout(() => location.reload(), 150);
       };
       box.querySelector('#btnReset').onclick = () => {
         if (!confirm('确定要重开一世吗？当前进度会全部消失。')) return;
+        this.skipSave = true;
         clearGame();
         location.reload();
       };
