@@ -318,7 +318,7 @@ img { image-rendering: pixelated; }
 }
 .modal-root[hidden] { display: none; }
 .modal {
-  width: min(760px, 96vw);
+  width: min(var(--modal-w, 760px), 96vw);
   max-height: 92vh;
   overflow: auto;
   background: var(--panel-bg);
@@ -471,9 +471,9 @@ img { image-rendering: pixelated; }
     border-radius: 0;
   }
   .skillbar {
-    position: absolute;
-    right: 6px;
-    bottom: 6px;
+    position: static;
+    justify-content: flex-end;
+    padding: 6px 6px 0;
     z-index: 3;
     pointer-events: none;
   }
@@ -573,7 +573,8 @@ img { image-rendering: pixelated; }
   .slot { min-height: 44px; }
   .bag-grid { grid-template-columns: repeat(6, 1fr); }
   .skill { width: 46px; height: 46px; }
-  .modal { padding: 12px; width: 100%; }
+  .modal-root { padding: 10px; }
+  .modal { padding: 12px; width: 100%; max-height: calc(100dvh - 20px); }
   .creation { grid-template-columns: minmax(0, 1fr); }
   .creation .preview { height: 180px; }
 
@@ -643,10 +644,13 @@ img { image-rendering: pixelated; }
   }
   .tabbar button { min-height: 42px; }
 
-  /* 技能栏抬高，避免和底部页签栏重叠 */
+  /* 技能栏挂到顶栏下方，避开角色与底部页签栏 */
   .skillbar {
+    position: absolute;
+    top: calc(50px + env(safe-area-inset-top));
     right: 8px;
-    bottom: calc(52px + env(safe-area-inset-bottom));
+    bottom: auto;
+    padding: 0;
   }
 
   .scrim {

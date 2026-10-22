@@ -552,7 +552,9 @@ export class Combat {
     const b = this.boss;
     const w = 320;
     const x = (VIEW.w - w) / 2;
-    const y = 14;
+    // 横屏顶栏浮在画布上，Boss 血条下移让出位置
+    const mobileLandscape = matchMedia('(max-height: 560px) and (orientation: landscape)').matches;
+    const y = mobileLandscape ? 56 : 14;
     ctx.save();
     ctx.fillStyle = 'rgba(6,8,12,.78)';
     ctx.fillRect(x - 3, y - 3, w + 6, 18);

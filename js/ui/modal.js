@@ -9,7 +9,7 @@ export function openModal(build, opts = {}) {
   modalRoot.innerHTML = '';
   const box = document.createElement('div');
   box.className = 'modal';
-  if (opts.width) box.style.width = opts.width;
+  if (opts.width) box.style.setProperty('--modal-w', opts.width);
   build(box, closeModal);
   modalRoot.appendChild(box);
   onCloseCb = opts.onClose || null;
