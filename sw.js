@@ -12,6 +12,7 @@ const CORE = [
   './js/ui/screens.js',
   './js/ui/nav.js',
   './js/ui/roots.js',
+  './js/ui/farm.js',
   './assets/fonts/fusion-pixel-12px.woff2',
   './assets/icons/icon-192.png',
 ];

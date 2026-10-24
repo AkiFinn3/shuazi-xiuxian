@@ -8,6 +8,7 @@ import {
   markPanelsDirty,
 } from './panels.js';
 import { renderCave } from './cave.js';
+import { renderFarm } from './farm.js';
 import { renderSect } from './sect.js';
 import { renderFate } from './fate.js';
 import { renderDungeon } from './dungeon.js';
@@ -30,13 +31,14 @@ const PAGES = {
     }),
   },
   cave: { label: '洞府', render: (g, el) => renderCave(g, el) },
+  farm: { label: '灵田', render: (g, el) => renderFarm(g, el) },
   sect: { label: '宗门', render: (g, el) => renderSect(g, el) },
   dungeon: { label: '秘境', render: (g, el) => renderDungeon(g, el) },
   fate: { label: '法宝', render: (g, el) => renderFate(g, el) },
   ascend: { label: '仙缘', render: (g, el) => renderAscend(g, el) },
 };
 
-const LIVE_PAGES = new Set(['character', 'cave', 'sect']);
+const LIVE_PAGES = new Set(['character', 'cave', 'sect', 'farm']);
 
 let game = null;
 let battleScreen = null;
