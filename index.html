@@ -47,20 +47,27 @@
     </div>
   </header>
 
-  <!-- 主体 -->
-  <main class="main">
-    <aside class="side side-left" id="leftPanel"></aside>
+  <div class="app-body">
+    <nav class="nav-rail" id="navRail" aria-label="主界面导航"></nav>
+    <div class="screen-root" id="screenRoot">
+      <section class="screen" data-screen="battle" id="battleScreen">
+        <main class="main">
+          <aside class="side side-left" id="leftPanel"></aside>
 
-    <section class="stage-wrap">
-      <div class="stage" id="stage">
-        <canvas id="game" width="640" height="360"></canvas>
-        <div class="stage-overlay" id="stageOverlay"></div>
-      </div>
-      <div class="skillbar" id="skillBar"></div>
-    </section>
+          <section class="stage-wrap">
+            <div class="stage" id="stage">
+              <canvas id="game" width="640" height="360"></canvas>
+              <div class="stage-overlay" id="stageOverlay"></div>
+            </div>
+            <div class="skillbar" id="skillBar"></div>
+          </section>
 
-    <aside class="side side-right" id="rightPanel"></aside>
-  </main>
+          <aside class="side side-right" id="rightPanel"></aside>
+        </main>
+      </section>
+      <section class="screen page-screen" data-screen="page" id="pageScreen" hidden></section>
+    </div>
+  </div>
 
   <!-- 底栏 -->
   <footer class="bottombar">
@@ -73,7 +80,7 @@
     </div>
   </footer>
 
-  <!-- 移动端底部页签 -->
+  <!-- 移动端底部页签（Task 5 替换） -->
   <nav class="tabbar" id="tabbar" hidden></nav>
   <div class="scrim" id="scrim" hidden></div>
 </div>

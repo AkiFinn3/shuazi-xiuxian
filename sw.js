@@ -1,5 +1,5 @@
 /* Service Worker：让游戏可以「添加到主屏幕」并离线玩 */
-const VERSION = 'shuazi-xiuxian-v1';
+const VERSION = 'shuazi-xiuxian-v2';
 const CORE = [
   './',
   './index.html',
@@ -8,6 +8,9 @@ const CORE = [
   './js/main.js',
   './js/data/config.js',
   './js/data/sprites.js',
+  './js/game/spirit_root.js',
+  './js/ui/screens.js',
+  './js/ui/nav.js',
   './assets/fonts/fusion-pixel-12px.woff2',
   './assets/icons/icon-192.png',
 ];

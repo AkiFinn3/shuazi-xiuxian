@@ -117,6 +117,77 @@ img { image-rendering: pixelated; }
 .stat-chip img { width: 16px; height: 16px; }
 .chip-label { color: var(--dim); font-size: 11px; }
 
+/* ---------------- 屏幕外壳 ---------------- */
+.app-body {
+  display: flex;
+  gap: 6px;
+  min-height: 0;
+  min-width: 0;
+}
+.nav-rail {
+  width: 64px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.nav-rail::-webkit-scrollbar { display: none; }
+.nav-rail button {
+  display: grid;
+  place-items: center;
+  gap: 1px;
+  min-height: 48px;
+  padding: 3px 2px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--dim);
+  font-family: inherit;
+  cursor: pointer;
+}
+.nav-rail button:hover { color: var(--text); border-color: var(--line); }
+.nav-rail button.on {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(232, 196, 106, .08);
+}
+.nav-rail .ni { font-size: 16px; line-height: 1; }
+.nav-rail .nl { font-size: 10px; letter-spacing: 1px; }
+.screen-root {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+.screen {
+  height: 100%;
+  min-height: 0;
+}
+.screen[hidden] { display: none; }
+.screen[data-screen="battle"] .main { height: 100%; }
+.page-screen {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 16px 18px;
+}
+.page-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.page-screen .bag-grid {
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+}
+.nav-mobile { display: none; }
+
 /* ---------------- 主体 ---------------- */
 .main {
   display: grid;

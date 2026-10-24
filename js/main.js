@@ -24,6 +24,7 @@ import { openCreation } from './ui/creation.js';
 import { initHud, refreshHud } from './ui/hud.js';
 import { buildPanels, refreshPanels, isTouch, markPanelsDirty, flushPanels, refreshLivePanel } from './ui/panels.js';
 import { initLayout, isMobileLayout } from './ui/layout.js';
+import { initScreens, battleVisible, flushScreens, refreshLiveScreen } from './ui/screens.js';
 import { buildSkillBar, refreshSkillBar } from './ui/skills.js';
 import { logLine } from './ui/log.js';
 import { DEATH_QUIPS, QUIPS } from './data/names.js';
@@ -85,6 +86,7 @@ class Game {
     buildPanels(this);
     buildSkillBar(this);
     initLayout(this);
+    initScreens(this);
     this.bindUi();
 
     audio.setEnabled(this.state.settings.sound !== false);
@@ -232,6 +234,7 @@ class Game {
     if (this.flushTimer > 0.35) {
       this.flushTimer = 0;
       flushPanels();
+      flushScreens();
     }
 
     // 器灵小故事
@@ -255,6 +258,7 @@ class Game {
     if (this.panelTimer > 4) {
       this.panelTimer = 0;
       refreshLivePanel();
+      refreshLiveScreen();
     }
 
     // 成就检查
@@ -300,6 +304,7 @@ class Game {
 
   render() {
     if (!this.state || !this.combat) return;
+    if (!battleVisible()) return;
     const ctx = this.ctx;
     const off = this.fx.offset();
     ctx.save();
@@ -550,6 +555,7 @@ class Game {
     this.log(`前往第 ${target} 层 · ${chapter.name}`, 'l-good');
     this.preloadForFloor(target);
     this.save();
+    markPanelsDirty('both');
     refreshPanels();
   }
 
