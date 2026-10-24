@@ -139,6 +139,9 @@ export async function doTribulation(game, realmIndex) {
     game.fx.addShake(8);
     audio.fanfare();
     toast(`渡劫成功 · ${realmName}期`, '#e8c46a');
+    if (realmIndex === 1 && !state.spiritRoots) {
+      game.queueRootTest({ delay: 60 });
+    }
   } else {
     // 失败：损失一半修为，稍后再来
     state.exp = Math.floor(state.exp * 0.5);

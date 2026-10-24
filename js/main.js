@@ -11,6 +11,7 @@ import { tickAlchemy, finishAlchemy, reroll } from './game/crafting.js';
 import { saveGame, loadGame, clearGame, exportSave, importSave, offlineReward } from './game/save.js';
 import { doTribulation } from './game/tribulation.js';
 import { addFateExp, FATE_TYPES, FATE_TIERS, spiritLine } from './game/fate.js';
+import { rollSpiritRoots, spiritRootSummary } from './game/spirit_root.js';
 import { ensureQuests, count as countQuest, dayKey } from './game/quests.js';
 import { randomEvent } from './data/events.js';
 import { checkAchievements } from './data/achievements.js';
@@ -26,6 +27,7 @@ import { buildPanels, refreshPanels, isTouch, markPanelsDirty, flushPanels, refr
 import { initLayout, isMobileLayout } from './ui/layout.js';
 import { initScreens, battleVisible, flushScreens, refreshLiveScreen } from './ui/screens.js';
 import { buildSkillBar, refreshSkillBar } from './ui/skills.js';
+import { openRootTest } from './ui/roots.js';
 import { logLine } from './ui/log.js';
 import { DEATH_QUIPS, QUIPS } from './data/names.js';
 import { preload, preloadAnim } from './engine/assets.js';
@@ -102,6 +104,9 @@ class Game {
     }
     this.loop.start();
     logLine(`${state.name} 来到青云山脚。`, 'l-good');
+    if (this.state.realm >= 1 && !this.state.spiritRoots) {
+      this.queueRootTest({ delay: 600 });
+    }
   }
 
   /** 预载当前章节的场景、主角与妖兽资源 */
@@ -172,6 +177,38 @@ class Game {
     doTribulation(this, realmIndex).finally(() => {
       this.tribulationActive = false;
     });
+  }
+
+  /** 渡劫等弹窗结束后再测灵根，避免两层弹窗叠在一起 */
+  queueRootTest(opts = {}) {
+    if (!this.state || this._rootQueue) return;
+    const retest = !!opts.retest;
+    if (!retest && this.state.spiritRoots) return;
+    this._rootQueue = true;
+    const delay = opts.delay ?? 300;
+
+    const tryOpen = () => {
+      if (!this.state) {
+        this._rootQueue = false;
+        return;
+      }
+      const modal = document.getElementById('modalRoot');
+      if (modal && !modal.hidden) {
+        setTimeout(tryOpen, 300);
+        return;
+      }
+      this._rootQueue = false;
+      const roots = rollSpiritRoots(this.rng);
+      this.state.spiritRoots = roots;
+      this.recompute();
+      if (this.combat) this.combat.refreshRoots();
+      this.log(`测灵根：${spiritRootSummary(roots)}`, roots.heavenly ? 'l-loot' : 'l-good');
+      if (roots.heavenly) this.log('天灵根现世。', 'l-loot');
+      this.save();
+      markPanelsDirty('both');
+      openRootTest(this, roots, { retest });
+    };
+    setTimeout(tryOpen, delay);
   }
 
   toggleAutoBattle(force) {

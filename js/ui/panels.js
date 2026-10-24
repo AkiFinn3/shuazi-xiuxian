@@ -12,6 +12,7 @@ import { renderAscend } from './ascend.js';
 import { bagSize } from '../game/ascend.js';
 import { openItemSheet } from './sheet.js';
 import { fateSprite, FATE_TYPES, FATE_TIERS } from '../game/fate.js';
+import { renderRootBlock } from './roots.js';
 
 const SLOT_GLYPH = { weapon: '兵', helmet: '冠', robe: '袍', boots: '靴', pendant: '佩', ring: '戒' };
 const SLOT_ICON = {
@@ -211,6 +212,7 @@ function renderLeftInto(g, root, opts = {}) {
   root.innerHTML = opts.full
     ? `<div class="panel-title">角色</div>
        <div class="sub-title">属性</div>${statsHtml}
+       ${opts.showRoots ? renderRootBlock(g) : ''}
        <div class="sub-title">装备</div>${equipmentHtml}
        <div class="sub-title">修为</div>${progressHtml}`
     : `<div class="panel-title">装备</div>${equipmentHtml}

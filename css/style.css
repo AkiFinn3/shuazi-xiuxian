@@ -343,6 +343,75 @@ img { image-rendering: pixelated; }
 .stat-list span:last-child { color: var(--text); }
 .stat-list .k { color: var(--dim); }
 
+/* 灵根 */
+.root-lock {
+  color: var(--dim);
+  font-size: 11px;
+  padding: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+}
+.root-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px;
+}
+.root-card {
+  border: 1px solid var(--root-color);
+  border-radius: 4px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .04), transparent);
+}
+.root-elem {
+  color: var(--root-color);
+  font-size: 18px;
+  letter-spacing: 4px;
+}
+.root-grade { color: var(--gold); font-size: 11px; }
+.root-effect { color: var(--dim); font-size: 10px; margin-top: 4px; }
+.root-bonus { color: var(--text); font-size: 11px; margin-top: 6px; }
+.roots.heavenly .root-card {
+  border-color: #f2d98a;
+  box-shadow: 0 0 18px rgba(242, 217, 138, .35);
+}
+.root-title {
+  color: #f2d98a;
+  letter-spacing: 6px;
+  font-size: 15px;
+  text-shadow: 0 0 12px rgba(242, 217, 138, .6);
+  margin-bottom: 6px;
+}
+.root-orbs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0;
+}
+.root-orb {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--root-color);
+  color: var(--root-color);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  opacity: .2;
+  animation: root-glow 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * .2s);
+}
+@keyframes root-glow {
+  50% { opacity: 1; box-shadow: 0 0 14px var(--root-color); }
+}
+.root-result { opacity: 0; transition: opacity .35s; }
+.root-stage.reveal .root-result { opacity: 1; }
+.root-stage.reveal .root-orbs { opacity: .35; transition: opacity .4s; }
+.root-stage.heavenly.reveal { animation: root-flash .8s ease-out; }
+@keyframes root-flash {
+  from { background: rgba(242, 217, 138, .35); }
+  to { background: transparent; }
+}
+
 /* 背包 */
 .bag-grid {
   display: grid;

@@ -11,6 +11,7 @@ const CORE = [
   './js/game/spirit_root.js',
   './js/ui/screens.js',
   './js/ui/nav.js',
+  './js/ui/roots.js',
   './assets/fonts/fusion-pixel-12px.woff2',
   './assets/icons/icon-192.png',
 ];
