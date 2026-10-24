@@ -754,6 +754,10 @@ img { image-rendering: pixelated; }
    横屏手机：战场占满全屏，页签栏浮在底部，抽屉从右侧滑出
    ========================================================= */
 @media (max-height: 560px) and (orientation: landscape) {
+  /* 顶栏浮动后不再占 grid 行，手动分配战场与底栏两行 */
+  .app { grid-template-rows: minmax(0, 1fr) auto; }
+  .app-body { grid-row: 1; }
+  .nav-mobile { grid-row: 2; }
   .topbar {
     position: absolute;
     top: 0; left: 0; right: 0;
