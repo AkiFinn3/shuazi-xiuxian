@@ -571,14 +571,34 @@ class Game {
   }
 
   /* ---------------- 丹药 ---------------- */
-  usePill(pill) {
+  usePill(pill, opts = {}) {
     const s = this.state;
     const now = Date.now();
+    const onConsume = opts.onConsume || null;
     s.buffs = s.buffs || {};
+
+    const finish = () => {
+      this.recompute();
+      markPanelsDirty('both');
+      this.save();
+      this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
+      toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
+      if (onConsume) onConsume();
+    };
+
+    if (pill.effect.reroll) {
+      this.openRerollChoice(pill, {
+        canRoots: !!(s.spiritRoots && s.realm >= 1),
+        onConsume,
+      });
+      return false;
+    }
+
+    let tribulation = null;
     if (pill.effect.exp) {
       const res = addExp(s, pill.exp);
       for (const lv of res.levels) this.log(`修为精进：${lv.label}`, 'l-good');
-      if (res.tribulation) this.startTribulation(res.tribulation);
+      tribulation = res.tribulation;
     }
     if (pill.effect.atkPct) {
       s.buffs.atkUntil = now + (pill.effect.duration || 900) * 1000;
@@ -592,20 +612,69 @@ class Game {
       s.buffs.tribResist = Math.min(0.75, (s.buffs.tribResist || 0) + pill.effect.tribulation);
       this.log(`破境丹护体：下次渡劫伤害 -${Math.round(s.buffs.tribResist * 100)}%。`, 'l-good');
     }
-    if (pill.effect.reroll) {
-      const item = Object.values(s.equip).find((i) => i && Object.keys(i.affixes || {}).length);
-      if (item) {
-        const before = JSON.stringify(item.affixes);
-        reroll(item, this.rng);
-        if (before !== JSON.stringify(item.affixes)) {
-          this.log(`洗髓丹生效：${item.name} 词缀已变。`, 'l-loot');
-        }
-      }
+
+    finish();
+    if (tribulation) this.startTribulation(tribulation);
+    return true;
+  }
+
+  openRerollChoice(pill, { canRoots, onConsume } = {}) {
+    openModal((box, close) => {
+      box.innerHTML = `
+        <h2>${pill.name}</h2>
+        <p class="muted">${pill.desc}</p>
+        <div class="divider"></div>
+        <div class="row">
+          ${canRoots ? '<button class="btn btn-gold" data-choice="roots">重测灵根</button>' : ''}
+          <button class="btn" data-choice="affix">重铸装备词缀</button>
+          <button class="btn btn-ghost" data-choice="cancel">取消</button>
+        </div>`;
+      box.querySelectorAll('[data-choice]').forEach((btn) => {
+        btn.onclick = () => {
+          const choice = btn.dataset.choice;
+          close();
+          if (choice === 'cancel') return;
+          if (choice === 'roots') {
+            this.rerollSpiritRoots();
+          } else {
+            this.rerollEquipAffix();
+          }
+          this.recompute();
+          markPanelsDirty('both');
+          this.save();
+          this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
+          toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
+          if (onConsume) onConsume();
+        };
+      });
+    });
+  }
+
+  rerollEquipAffix() {
+    const s = this.state;
+    const item = Object.values(s.equip).find((i) => i && Object.keys(i.affixes || {}).length);
+    if (!item) {
+      this.log('身上没有可洗练的装备。', 'l-dim');
+      return;
     }
-    this.recompute();
-    markPanelsDirty('both');
-    this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
-    toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
+    const before = JSON.stringify(item.affixes);
+    reroll(item, this.rng);
+    if (before !== JSON.stringify(item.affixes)) {
+      this.log(`洗髓丹生效：${item.name} 词缀已变。`, 'l-loot');
+    } else {
+      this.log(`洗髓丹生效：${item.name} 的词缀没有变化。`, 'l-dim');
+    }
+  }
+
+  rerollSpiritRoots() {
+    const roots = rollSpiritRoots(this.rng);
+    this.state.spiritRoots = roots;
+    if (this.combat) this.combat.refreshRoots();
+    this.log(`重测灵根：${spiritRootSummary(roots)}`, roots.heavenly ? 'l-loot' : 'l-good');
+    if (roots.heavenly) this.log('天灵根现世。', 'l-loot');
+    this.save();
+    openRootTest(this, roots, { retest: true });
+    return roots;
   }
 
   /* ---------------- 任务计数 ---------------- */

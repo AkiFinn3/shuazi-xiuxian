@@ -186,13 +186,16 @@ export function renderCave(game, el) {
 
   el.querySelectorAll('[data-pill]').forEach((b) => {
     b.onclick = () => {
-      const i = Number(b.dataset.pill);
-      const pill = s.pills[i];
+      const pill = s.pills[Number(b.dataset.pill)];
       if (!pill) return;
-      s.pills.splice(i, 1);
-      game.usePill(pill);
-      game.save();
-      renderCave(game, el);
+      game.usePill(pill, {
+        onConsume: () => {
+          const idx = s.pills.indexOf(pill);
+          if (idx >= 0) s.pills.splice(idx, 1);
+          game.save();
+          renderCave(game, el);
+        },
+      });
     };
   });
 

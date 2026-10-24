@@ -33,7 +33,7 @@ export const RECIPES = [
   {
     key: 'xisui', name: '洗髓丹', icon: 'ui/ui_xianxia_item_pill_bottle',
     herb: 3, core: 2, coin: 260, time: 120,
-    desc: '洗去装备上的杂质，重随一条词缀。',
+    desc: '洗去杂质：重铸一条装备词缀，或重测灵根（筑基后）。',
     effect: { reroll: true },
   },
 ];
