@@ -32,23 +32,38 @@ let rightTab = 'gear';
 const dirty = { left: false, right: false };
 const LIVE_TABS = new Set(['cave', 'sect', 'fate', 'dungeon', 'ascend']);
 let preview = { src: '', image: null };
+let panelsMounted = true;
+let dirtyHook = null;
 
 /** 是否触屏设备（没有 hover） */
 export function isTouch() {
   return window.matchMedia && window.matchMedia('(hover: none)').matches;
 }
 
+export function setPanelDirtyHook(fn) {
+  dirtyHook = fn;
+}
+
+export function setPanelsMounted(mounted) {
+  panelsMounted = !!mounted;
+  if (!panelsMounted) {
+    if (leftPanel) leftPanel.innerHTML = '';
+    if (rightPanel) rightPanel.innerHTML = '';
+  }
+}
+
 export function buildPanels(g) {
   game = g;
   leftPanel = document.getElementById('leftPanel');
   rightPanel = document.getElementById('rightPanel');
+  panelsMounted = true;
   dirty.left = dirty.right = false;
   renderLeft();
   renderRight();
 }
 
 export function refreshPanels() {
-  if (!game) return;
+  if (!game || !panelsMounted) return;
   dirty.left = dirty.right = false;
   renderLeft();
   renderRight();
@@ -58,11 +73,12 @@ export function refreshPanels() {
 export function markPanelsDirty(which = 'both') {
   if (which === 'left' || which === 'both') dirty.left = true;
   if (which === 'right' || which === 'both') dirty.right = true;
+  if (dirtyHook) dirtyHook(which);
 }
 
 /** 合并刷新的入口：每个周期最多重建一次 DOM */
 export function flushPanels() {
-  if (!game) return;
+  if (!game || !panelsMounted) return;
   if (dirty.left) { dirty.left = false; renderLeft(); }
   if (dirty.right) {
     dirty.right = false;
@@ -84,7 +100,7 @@ function updateBagTab() {
  * 只重建内容区并保留滚动位置，避免打断阅读和误触。
  */
 export function refreshLivePanel() {
-  if (!game || !rightPanel || !LIVE_TABS.has(rightTab)) return;
+  if (!game || !panelsMounted || !rightPanel || !LIVE_TABS.has(rightTab)) return;
   if (!rightPanel.offsetWidth) return;
   const modal = document.getElementById('modalRoot');
   if (modal && !modal.hidden) return;
@@ -112,10 +128,16 @@ export function currentTab() {
 }
 
 /* ---------------- 左：装备与属性 ---------------- */
-function renderLeft() {
-  const s = game.state;
-  const stats = game.stats;
-  const scroll = leftPanel.scrollTop;
+export function renderCharacter(g, root, opts = {}) {
+  renderLeftInto(g, root, { ...opts, full: true, showRoots: true });
+}
+
+function renderLeftInto(g, root, opts = {}) {
+  const s = g.state;
+  const stats = g.stats;
+  const scroll = root.scrollTop;
+  const rerender = opts.rerender || refreshPanels;
+
   const bodyHtml = SLOTS.map((slot) => {
     const item = s.equip[slot.key];
     const rarity = item ? RARITIES[rarityIndex(item.rarity)] : null;
@@ -137,7 +159,6 @@ function renderLeft() {
     ? `<div class="kv"><span>境界瓶颈</span><span class="red">需通关第 ${gate} 层</span></div>`
     : '';
 
-  // 本命法宝
   const fate = s.fate || {};
   const fateRow = fate.unlocked
     ? `<div class="slot" id="fateSlot">
@@ -155,15 +176,15 @@ function renderLeft() {
         </div>
       </div>`;
 
-  leftPanel.innerHTML = `
-    <div class="panel-title">装备</div>
+  const equipmentHtml = `
     <div class="paperdoll">
       <div class="pd-mid">
         <div class="pd-body"><canvas id="bodyPreview" width="56" height="80"></canvas></div>
       </div>
       <div>${bodyHtml}${fateRow}</div>
-    </div>
-    <div class="sub-title">属性</div>
+    </div>`;
+
+  const statsHtml = `
     <div class="stat-list">
       <div><span class="k">攻击</span><span>${stats.atk}</span></div>
       <div><span class="k">气血</span><span>${stats.maxHp}</span></div>
@@ -174,8 +195,9 @@ function renderLeft() {
       <div><span class="k">吸血</span><span>${stats.lifesteal.toFixed(1)}%</span></div>
       <div><span class="k">幸运</span><span>${stats.luck.toFixed(0)}</span></div>
       <div><span class="k">元素伤害</span><span>${stats.elem.toFixed(1)}%</span></div>
-    </div>
-    <div class="sub-title">修为</div>
+    </div>`;
+
+  const progressHtml = `
     <div class="stat-list">
       <div><span class="k">境界</span><span>${realmLabel(s)}</span></div>
       <div><span class="k">修为</span><span>${Math.floor(s.exp)}/${need}</span></div>
@@ -186,34 +208,46 @@ function renderLeft() {
       <div><span class="k">死亡</span><span>${s.stats.deaths}</span></div>
     </div>`;
 
-  leftPanel.scrollTop = scroll;
+  root.innerHTML = opts.full
+    ? `<div class="panel-title">角色</div>
+       <div class="sub-title">属性</div>${statsHtml}
+       <div class="sub-title">装备</div>${equipmentHtml}
+       <div class="sub-title">修为</div>${progressHtml}`
+    : `<div class="panel-title">装备</div>${equipmentHtml}
+       <div class="sub-title">属性</div>${statsHtml}
+       <div class="sub-title">修为</div>${progressHtml}`;
 
-  // 身体预览（同一外观只创建一次 Image）
-  const c = leftPanel.querySelector('#bodyPreview');
-  if (c) drawBodyPreview(c, s.appearance);
+  root.scrollTop = scroll;
 
-  // 点击槽位 = 卸下
-  leftPanel.querySelectorAll('.slot[data-slot]').forEach((el) => {
+  const c = root.querySelector('#bodyPreview');
+  if (c) drawBodyPreview(c, s.appearance, root);
+
+  root.querySelectorAll('.slot[data-slot]').forEach((el) => {
     el.onclick = () => {
       const key = el.dataset.slot;
-      const item = game.state.equip[key];
+      const item = g.state.equip[key];
       if (!item) return;
-      if (game.state.bag.length >= bagSize(game.state)) { toast('背包满了'); return; }
-      game.state.equip[key] = null;
-      game.state.bag.push(item);
-      game.recompute();
-      refreshPanels();
+      if (g.state.bag.length >= bagSize(g.state)) { toast('背包满了'); return; }
+      g.state.equip[key] = null;
+      g.state.bag.push(item);
+      g.recompute();
+      g.save();
+      rerender();
     };
   });
 
-  // 本命法宝 -> 切到法宝页
-  const fateSlot = leftPanel.querySelector('#fateSlot');
+  const fateSlot = root.querySelector('#fateSlot');
   if (fateSlot) {
     fateSlot.onclick = () => {
+      if (opts.onOpenFate) { opts.onOpenFate(); return; }
       setRightTab('fate');
-      refreshPanels();
+      rerender();
     };
   }
+}
+
+function renderLeft() {
+  renderLeftInto(game, leftPanel, { rerender: refreshPanels, full: false, showRoots: false });
 }
 
 /* ---------------- 右：背包 / 洞府 / 宗门 ---------------- */
@@ -250,11 +284,12 @@ function renderRightBody(body) {
   else if (rightTab === 'fate') renderFate(game, body);
   else if (rightTab === 'dungeon') renderDungeon(game, body);
   else if (rightTab === 'ascend') renderAscend(game, body);
-  else renderBag(body);
+  else renderBagInto(game, body);
 }
 
-function renderBag(body) {
-  const s = game.state;
+export function renderBagInto(g, body, opts = {}) {
+  const s = g.state;
+  const rerender = opts.rerender || refreshPanels;
   const cells = [];
   for (let i = 0; i < bagSize(s); i++) {
     const item = s.bag[i];
@@ -276,6 +311,7 @@ function renderBag(body) {
     `<div class="kv"><span>${MAT_NAME[k] || k}</span><span>${v}</span></div>`).join('') || '<div class="muted">暂无材料</div>';
 
   body.innerHTML = `
+    ${opts.full ? '<div class="panel-title">背包</div>' : ''}
     <div class="row mb8">
       <button class="btn btn-sm btn-jade" id="btnBest">一键最优</button>
       <button class="btn btn-sm" id="btnSalvageLow">分解低阶</button>
@@ -294,54 +330,52 @@ function renderBag(body) {
   const chk = body.querySelector('#chkAutoSalvage');
   if (chk) {
     chk.onchange = () => {
-      game.state.settings.autoSalvage = chk.checked;
+      g.state.settings.autoSalvage = chk.checked;
       const foot = document.getElementById('tglAutoSalvage');
       if (foot) foot.checked = chk.checked;
-      game.save();
+      g.save();
     };
   }
   const sel = body.querySelector('#selSalvageLevel');
-  if (sel) sel.onchange = () => { game.state.settings.autoSalvageBelow = sel.value; game.save(); };
+  if (sel) sel.onchange = () => { g.state.settings.autoSalvageBelow = sel.value; g.save(); };
 
   const best = body.querySelector('#btnBest');
-  if (best) best.onclick = () => { game.equipBest(); refreshPanels(); };
+  if (best) best.onclick = () => { g.equipBest(); rerender(); };
   const sl = body.querySelector('#btnSalvageLow');
-  if (sl) sl.onclick = () => { game.salvageBelow(); refreshPanels(); };
+  if (sl) sl.onclick = () => { g.salvageBelow(); rerender(); };
   const sa = body.querySelector('#btnSalvageAll');
   if (sa) {
     sa.onclick = () => {
-      if (!game.state.bag.length) { toast('背包是空的'); return; }
-      if (!confirm(`确定分解背包里的 ${game.state.bag.length} 件装备吗？`)) return;
-      game.salvageAll();
-      refreshPanels();
+      if (!g.state.bag.length) { toast('背包是空的'); return; }
+      if (!confirm(`确定分解背包里的 ${g.state.bag.length} 件装备吗？`)) return;
+      g.salvageAll();
+      rerender();
     };
   }
 
-  // 格子交互
   body.querySelectorAll('.cell.has').forEach((el) => {
-    const item = game.state.bag.find((x) => x.id === Number(el.dataset.id));
+    const item = g.state.bag.find((x) => x.id === Number(el.dataset.id));
     if (!item) return;
-    el.onmouseenter = (e) => showTooltip(itemTooltip(item), e.clientX, e.clientY);
+    el.onmouseenter = (e) => showTooltip(itemTooltip(item, g.state), e.clientX, e.clientY);
     el.onmousemove = (e) => moveTooltip(e.clientX, e.clientY);
     el.onmouseleave = hideTooltip;
     el.onclick = () => {
-      // 触屏：弹底部详情层（hover 气泡在触屏上没有意义）
       if (isTouch()) {
         openItemSheet(item, {
-          onEquip: (it) => { game.equipItem(it.id); refreshPanels(); },
-          onSalvage: (it) => { game.salvageItem(it.id); refreshPanels(); },
+          onEquip: (it) => { g.equipItem(it.id); rerender(); },
+          onSalvage: (it) => { g.salvageItem(it.id); rerender(); },
         });
         return;
       }
-      game.equipItem(item.id);
-      refreshPanels();
+      g.equipItem(item.id);
+      rerender();
     };
-    el.oncontextmenu = (e) => { e.preventDefault(); game.salvageItem(item.id); refreshPanels(); };
+    el.oncontextmenu = (e) => { e.preventDefault(); g.salvageItem(item.id); rerender(); };
   });
 }
 
 /* ---------------- 物品展示 ---------------- */
-function drawBodyPreview(canvas, appearance) {
+function drawBodyPreview(canvas, appearance, scope) {
   const meta = SPRITES.anims[`hero/${appearance}_idle`];
   if (!meta) return;
   const draw = (image, target) => {
@@ -357,7 +391,7 @@ function drawBodyPreview(canvas, appearance) {
     preview = { src: meta.src, image: new Image() };
     const image = preview.image;
     image.onload = () => {
-      const current = leftPanel.querySelector('#bodyPreview');
+      const current = scope.querySelector('#bodyPreview');
       if (current && preview.image === image) draw(image, current);
     };
     image.src = meta.src;
@@ -378,8 +412,9 @@ function iconHtml(item, slotDef) {
     : `<span style="color:${rarity.color};font-size:15px">${SLOT_GLYPH[item.slot] || '器'}</span>`;
 }
 
-export function itemTooltip(item) {
-  const s = game.state;
+export function itemTooltip(item, state = game && game.state) {
+  const s = state;
+  if (!s) return '';
   const rarity = RARITIES[rarityIndex(item.rarity)];
   const eq = s.equip[item.slot];
   const lines = [];
