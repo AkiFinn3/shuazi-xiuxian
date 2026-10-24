@@ -19,6 +19,7 @@ export class Combat {
     this.scroll = 0;
     this.boss = null;
     this.reviveTimer = 0;
+    this.clock = 0;
     this.hero = {
       x: HERO_X,
       y: VIEW.ground,
@@ -129,6 +130,7 @@ export class Combat {
     const state = g.state;
     const stats = g.stats;
 
+    this.clock += dt;
     this.scroll += dt * 12;
     g.fx.update(dt);
 

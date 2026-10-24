@@ -255,6 +255,20 @@ img { image-rendering: pixelated; }
 }
 .skill.ready { border-color: var(--jade-dim); color: var(--jade); }
 
+.speed-btn {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  background: #171d29;
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.speed-btn:hover { background: #222b3d; }
+.speed-btn.locked { border-color: var(--line); color: var(--dim); }
+
 /* ---------------- 面板通用 ---------------- */
 .panel-title {
   color: var(--gold);

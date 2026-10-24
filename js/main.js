@@ -4,7 +4,7 @@ import { Fx } from './engine/fx.js';
 import { Rng } from './engine/rng.js';
 import { audio } from './engine/audio.js';
 import { VIEW, BALANCE, RARITIES, CHAPTERS, REALMS, SLOTS } from './data/config.js';
-import { createState, deriveStats, addExp, realmLabel, normalizeState } from './game/state.js';
+import { createState, deriveStats, addExp, realmLabel, normalizeState, maxSpeed } from './game/state.js';
 import { Combat } from './game/combat.js';
 import { rollItem, rarityIndex, isBetter, salvageValue, syncItemIds } from './game/loot.js';
 import { tickAlchemy, finishAlchemy, reroll } from './game/crafting.js';
@@ -78,6 +78,7 @@ class Game {
     ensureQuests(this.state);
     syncItemIds(this.state);
     this.stats = deriveStats(this.state);
+    this._lastMaxSpeed = maxSpeed(this.state);
     this.state.hp = Math.max(1, Math.min(this.state.hp || this.stats.maxHp, this.stats.maxHp));
     this.rng = new Rng(Date.now() & 0xffffffff);
     this.combat = new Combat(this);
@@ -185,6 +186,42 @@ class Game {
     this.save();
   }
 
+  setSpeed(speed, silent = false) {
+    const s = this.state;
+    if (!s) return;
+    const max = maxSpeed(s);
+    const next = Math.max(1, Math.min(max, Number(speed) || 1));
+    s.settings.speed = next;
+    this.save();
+    refreshSkillBar();
+    if (!silent) toast(`战斗速度 ×${next}`, '#6fd6b0');
+  }
+
+  cycleSpeed() {
+    const s = this.state;
+    if (!s) return;
+    const max = maxSpeed(s);
+    const cur = s.settings.speed || 1;
+    this.setSpeed(cur >= max ? 1 : cur + 1);
+  }
+
+  checkSpeedUnlock() {
+    const s = this.state;
+    if (!s) return;
+    const max = maxSpeed(s);
+    const prev = this._lastMaxSpeed || 1;
+    if (max > prev) {
+      const condition = max === 2 ? '炼气圆满' : '筑基初期';
+      this.log(`战斗速度 ×${max} 已解锁（${condition}）。`, 'l-good');
+      toast(`战斗速度 ×${max} 解锁`, '#e8c46a');
+    }
+    this._lastMaxSpeed = max;
+    if ((s.settings.speed || 1) > max) {
+      s.settings.speed = max;
+      refreshSkillBar();
+    }
+  }
+
   /* ---------------- 循环 ---------------- */
   update(dt) {
     if (!this.state) return;
@@ -212,8 +249,11 @@ class Game {
       }
     }
 
-    if (this.combat && !this.paused) this.combat.update(dt);
-    else if (this.paused) this.fx.update(dt);
+    const speed = this.state.settings.speed || 1;
+    if (this.combat) {
+      if (this.paused) this.fx.update(dt);
+      else this.combat.update(dt * speed);
+    }
 
     this.saveTimer += dt;
     if (this.saveTimer > 10) {
@@ -629,6 +669,7 @@ class Game {
   recompute() {
     this.stats = deriveStats(this.state);
     if (this.state.hp > this.stats.maxHp) this.state.hp = this.stats.maxHp;
+    this.checkSpeedUnlock();
   }
 
   save() {
@@ -695,6 +736,15 @@ class Game {
           <span class="tgl">音量</span>
           <input type="range" id="setVol" min="0" max="100" value="${Math.round((s.settings.volume || 0) * 100)}">
         </div>
+        <div class="panel-title">战斗速度</div>
+        <div class="row mb8" id="setSpeeds">
+          ${[1, 2, 3].map((n) => {
+            const unlocked = n <= maxSpeed(s);
+            const label = n === 1 ? '×1' : n === 2 ? '×2（炼气圆满解锁）' : '×3（筑基初期解锁）';
+            return `<button class="btn btn-sm ${s.settings.speed === n ? 'btn-jade' : ''}"
+              data-speed="${n}" ${unlocked ? '' : 'disabled'}>${label}</button>`;
+          }).join('')}
+        </div>
         <div class="divider"></div>
         <div class="panel-title">存档</div>
         <div class="row mb8">
@@ -725,6 +775,15 @@ class Game {
       };
       audio.setEnabled(s.settings.sound);
       audio.setVolume(s.settings.volume || 0.5);
+      box.querySelectorAll('[data-speed]').forEach((btn) => {
+        btn.onclick = () => {
+          if (btn.disabled) return;
+          this.setSpeed(Number(btn.dataset.speed));
+          box.querySelectorAll('[data-speed]').forEach((item) => {
+            item.classList.toggle('btn-jade', Number(item.dataset.speed) === s.settings.speed);
+          });
+        };
+      });
 
       box.querySelector('#btnExport').onclick = () => {
         box.querySelector('#saveBox').value = exportSave(s);
