@@ -4,18 +4,21 @@ import { Rng } from '../engine/rng.js';
 import { toast } from './modal.js';
 import { itemPower } from '../game/state.js';
 import { bagSize } from '../game/ascend.js';
+import { icon, isFullPage, pageHead, cardHead, barHtml } from './theme.js';
 
 const MAT_NAME = { iron: '玄铁', bone: '妖骨', jade: '寒玉', wood: '灵木', core: '妖丹', herb: '灵草' };
 let caveTab = 'alchemy';
 
 function costText(cost) {
   return Object.entries(cost)
+    .filter(([, v]) => v)
     .map(([k, v]) => `${k === 'coin' ? '灵石' : MAT_NAME[k] || k} ${v}`)
     .join('、');
 }
 
 export function renderCave(game, el) {
   const s = game.state;
+  const fullPage = isFullPage(el);
   s.alchemy = s.alchemy || [];
   s.pills = s.pills || [];
   s.mats.herb = s.mats.herb || 0;
@@ -23,65 +26,114 @@ export function renderCave(game, el) {
   const queue = s.alchemy.map((job) => {
     const r = RECIPES.find((x) => x.key === job.key);
     const pct = Math.max(0, Math.min(100, (1 - job.remain / job.total) * 100));
-    return `<div class="kv"><span>${r ? r.name : job.key}</span><span>${job.done ? '可收取' : Math.ceil(job.remain) + 's'}</span></div>
-      <div class="bar bar-xp" style="margin:2px 0 8px"><div class="bar-track"><i style="width:${pct}%"></i></div></div>`;
-  }).join('') || '<div class="muted">丹炉空着。闲得慌。</div>';
+    return `<div class="queue-item">
+      <div class="queue-head"><span>${r ? r.name : job.key}</span><span>${job.done ? '可收取' : Math.ceil(job.remain) + ' 秒'}</span></div>
+      ${barHtml(pct)}
+    </div>`;
+  }).join('') || '<div class="empty-state">丹炉空着。闲得慌。</div>';
 
   const recipeHtml = RECIPES.map((r) => {
     const cost = { herb: r.herb, core: r.core, coin: r.coin };
     const ok = canAfford(s, cost);
-    return `<div class="kv" style="align-items:center">
-      <span>${r.name}<br><span class="muted" style="font-size:10px">${costText(cost)} · ${r.time}s</span></span>
-      <span><button class="btn btn-sm ${ok ? 'btn-jade' : ''}" data-recipe="${r.key}" ${ok ? '' : 'disabled'}>炼制</button></span>
+    return `<div class="recipe-card">
+      <div class="recipe-icon">${icon('pill')}</div>
+      <div class="recipe-main">
+        <div class="recipe-name">${r.name}</div>
+        <div class="recipe-cost">${costText(cost)} · ${r.time} 秒</div>
+      </div>
+      <button class="btn btn-sm ${ok ? 'btn-jade' : ''}" data-recipe="${r.key}" ${ok ? '' : 'disabled'}>炼制</button>
     </div>`;
   }).join('');
 
   const pillHtml = s.pills.length
-    ? s.pills.map((p, i) => `<div class="kv"><span>${p.name}<br><span class="muted" style="font-size:10px">${p.quality}${p.exp ? ' · 修为 +' + p.exp : ''}</span></span>
-        <span><button class="btn btn-sm" data-pill="${i}">服用</button></span></div>`).join('')
-    : '<div class="muted">没有丹药。丹霞仙子会笑你。</div>';
+    ? s.pills.map((p, i) => `<div class="quest-item">
+        <div class="quest-main">
+          <div class="quest-name">${p.name}</div>
+          <div class="quest-desc">${p.quality}${p.exp ? ' · 修为 +' + p.exp : ''}</div>
+        </div>
+        <button class="btn btn-sm" data-pill="${i}">服用</button>
+      </div>`).join('')
+    : '<div class="empty-state">没有丹药。丹霞仙子会笑你。</div>';
 
   const blueHtml = BLUEPRINTS.map((b) => {
     const cost = { iron: b.iron || 0, bone: b.bone || 0, jade: b.jade || 0, wood: b.wood || 0, coin: b.coin };
     const ok = canAfford(s, cost);
-    return `<div class="kv" style="align-items:center">
-      <span>${b.name}<br><span class="muted" style="font-size:10px">${costText(cost)}</span></span>
-      <span><button class="btn btn-sm ${ok ? 'btn-jade' : ''}" data-blue="${b.key}" ${ok ? '' : 'disabled'}>打造</button></span>
+    return `<div class="recipe-card">
+      <div class="recipe-icon">${icon('hammer')}</div>
+      <div class="recipe-main">
+        <div class="recipe-name">${b.name}</div>
+        <div class="recipe-cost">${costText(cost)}</div>
+      </div>
+      <button class="btn btn-sm ${ok ? 'btn-jade' : ''}" data-blue="${b.key}" ${ok ? '' : 'disabled'}>打造</button>
     </div>`;
   }).join('');
 
-  const equipList = Object.entries(s.equip).filter(([, v]) => v).map(([slot, item]) => {    const cost = upgradeCost(item);
+  const equipList = Object.entries(s.equip).filter(([, v]) => v).map(([slot, item]) => {
+    const cost = upgradeCost(item);
     const chance = upgradeChance(item);
-    return `<div class="kv" style="align-items:center">
-      <span>${item.name} <span class="muted">+${item.plus || 0}</span><br>
-        <span class="muted" style="font-size:10px">强化 ${Math.round(chance * 100)}% · ${costText(cost)}</span></span>
-      <span>
+    return `<div class="talent-item">
+      <div class="talent-main">
+        <div class="talent-name">${item.name} <span class="lv">+${item.plus || 0}</span></div>
+        <div class="talent-desc">强化 ${Math.round(chance * 100)}% · ${costText(cost)}</div>
+      </div>
+      <span class="plot-actions">
         <button class="btn btn-sm" data-up="${slot}">强化</button>
         <button class="btn btn-sm" data-rr="${slot}">洗练</button>
-      </span></div>`;
-  }).join('') || '<div class="muted">身上没装备。</div>';
+      </span>
+    </div>`;
+  }).join('') || '<div class="empty-state">身上没装备。</div>';
+
+  const tabs = `<div class="segmented cave-tabs">
+    <div class="tab ${caveTab === 'alchemy' ? 'on' : ''}" data-cave-tab="alchemy">炼丹</div>
+    <div class="tab ${caveTab === 'forge' ? 'on' : ''}" data-cave-tab="forge">炼器</div>
+  </div>`;
+
+  const alchemyBody = fullPage
+    ? `<div class="cave-grid">
+        <section class="card">
+          ${cardHead('丹炉', `炼丹等级 Lv.${s.alchemyLevel || 1}`, 'cauldron')}
+          <div class="queue-list">${queue}</div>
+          <div class="sub-title">丹方</div>
+          <div class="recipe-list">${recipeHtml}</div>
+        </section>
+        <section class="card">
+          ${cardHead('丹药', `${s.pills.length} 枚`, 'pill')}
+          <div class="quest-list">${pillHtml}</div>
+          <div class="divider"></div>
+          <div class="muted small">灵草与妖丹可在灵田与秘境中获得。丹药服用后立即生效，洗髓丹可重测灵根。</div>
+        </section>
+      </div>`
+    : `<div class="row mb8"><span class="muted small">炼丹等级 Lv.${s.alchemyLevel || 1}</span></div>
+       <div class="queue-list">${queue}</div>
+       <div class="sub-title">丹方</div>
+       <div class="recipe-list">${recipeHtml}</div>
+       <div class="sub-title">丹药</div>
+       <div class="quest-list">${pillHtml}</div>`;
+
+  const forgeBody = fullPage
+    ? `<div class="cave-grid">
+        <section class="card">
+          ${cardHead('图纸', '铁锤真人手笔', 'scroll')}
+          <div class="recipe-list">${blueHtml}</div>
+        </section>
+        <section class="card">
+          ${cardHead('强化与洗练', '', 'hammer')}
+          <div class="talent-list">${equipList}</div>
+        </section>
+      </div>`
+    : `<div class="sub-title">图纸</div>
+       <div class="recipe-list">${blueHtml}</div>
+       <div class="sub-title">炼器 · 强化 / 洗练</div>
+       <div class="talent-list">${equipList}</div>`;
 
   el.innerHTML = `
-    <div class="panel-title">洞府</div>
-    <div class="tabs cave-tabs">
-      <div class="tab ${caveTab === 'alchemy' ? 'on' : ''}" data-cave-tab="alchemy">炼丹</div>
-      <div class="tab ${caveTab === 'forge' ? 'on' : ''}" data-cave-tab="forge">炼器</div>
-    </div>
-    ${caveTab === 'alchemy' ? `
-      <div class="row mb8">
-        <span class="muted">炼丹等级 Lv.${s.alchemyLevel || 1}</span>
-      </div>
-      ${queue}
-      <div class="sub-title">丹方</div>
-      ${recipeHtml}
-      <div class="sub-title">丹药</div>
-      ${pillHtml}
-    ` : `
-      <div class="sub-title">图纸</div>
-      ${blueHtml}
-      <div class="sub-title">炼器 · 强化 / 洗练</div>
-      ${equipList}
-    `}`;
+    ${fullPage ? pageHead({
+      kicker: 'CAVE · 洞府',
+      title: '洞府',
+      desc: '一炉丹火，一柄旧锤。修行之外，也要把日子过得像样。',
+      actions: tabs,
+    }) : `<div class="panel-title">洞府</div>${tabs}`}
+    ${caveTab === 'alchemy' ? alchemyBody : forgeBody}`;
 
   el.querySelectorAll('[data-cave-tab]').forEach((tab) => {
     tab.onclick = () => {

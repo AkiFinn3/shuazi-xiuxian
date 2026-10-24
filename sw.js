@@ -1,5 +1,5 @@
 /* Service Worker：让游戏可以「添加到主屏幕」并离线玩 */
-const VERSION = 'shuazi-xiuxian-v2';
+const VERSION = 'shuazi-xiuxian-v4';
 const CORE = [
   './',
   './index.html',
@@ -13,7 +13,9 @@ const CORE = [
   './js/ui/nav.js',
   './js/ui/roots.js',
   './js/ui/farm.js',
-  './assets/fonts/fusion-pixel-12px.woff2',
+  './assets/fonts/noto-serif-sc-regular.woff2',
+  './assets/fonts/noto-serif-sc-semibold.woff2',
+  './assets/hd/landscape-qinglu.webp',
   './assets/icons/icon-192.png',
 ];
 
@@ -42,7 +44,7 @@ self.addEventListener('fetch', (e) => {
   // 页面与代码：优先网络（保证更新生效），失败回落缓存
   if (req.mode === 'navigate' || /\.(?:js|css|html|webmanifest)$/.test(url.pathname)) {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then((res) => {
           const copy = res.clone();
           caches.open(VERSION).then((c) => c.put(req, copy)).catch(() => {});

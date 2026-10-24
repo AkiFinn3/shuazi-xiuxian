@@ -138,7 +138,7 @@ export async function doTribulation(game, realmIndex) {
     game.fx.addFlash('255,240,190', 0.7);
     game.fx.addShake(8);
     audio.fanfare();
-    toast(`渡劫成功 · ${realmName}期`, '#e8c46a');
+    toast(`渡劫成功 · ${realmName}期`, '#a8803c');
     if (realmIndex === 1 && !state.spiritRoots) {
       game.queueRootTest({ delay: 60 });
     }

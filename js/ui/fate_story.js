@@ -12,11 +12,14 @@ export function showFateStory(game, story) {
   openModal((box) => {
     box.innerHTML = `
       <h2>器灵手记 · ${story.title}</h2>
-      <div style="text-align:center;background:#0a0e15;border:1px solid var(--line);border-radius:3px;padding:10px;margin:10px 0">
-        ${sprite ? `<img src="${sprite}" style="max-width:80%;max-height:80px;image-rendering:pixelated">` : ''}
-        <div class="muted" style="font-size:11px;margin-top:4px">${name} · ${tier} · 器灵「${who}」</div>
+      <div class="fate-hero" style="justify-content:center;text-align:center;margin:12px 0">
+        <div class="fate-medallion">${sprite ? `<img src="${sprite}" alt="">` : ''}</div>
+        <div>
+          <div class="fate-tier">${name} · ${tier}</div>
+          <div class="fate-name" style="font-size:16px">器灵「${who}」</div>
+        </div>
       </div>
-      <div style="white-space:pre-wrap;line-height:1.9">${story.text.replace(/器灵/g, who)}</div>
+      <div style="white-space:pre-wrap;line-height:1.95">${story.text.replace(/器灵/g, who)}</div>
       <div class="row end mt8"><button class="btn btn-gold" id="fsOk">记下</button></div>`;
     box.querySelector('#fsOk').onclick = closeModal;
   }, { width: '460px' });

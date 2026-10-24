@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0c0f16" />
-<meta name="description" content="修仙题材的挂机刷宝像素游戏：自动打怪、刷装备、炼丹炼器、渡劫飞升。" />
+<meta name="theme-color" content="#F3EAD8" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="修仙题材的挂机刷宝游戏：自动打怪、刷装备、炼丹炼器、渡劫飞升。青绿山水，宋韵人间。" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="刷子修仙" />
@@ -15,11 +16,109 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-sword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19.5 3.5 10 13"/><path d="M14.5 3.5h6v6L11 19l-3-3z"/><path d="m6.5 14.5 3 3"/><path d="m5 19 2-2"/>
+  </symbol>
+  <symbol id="i-character" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="7.5" r="3.2"/><path d="M5.5 20c.6-4 3.1-6 6.5-6s5.9 2 6.5 6"/><path d="M9 4.6c.8-1.2 1.8-1.8 3-1.8s2.2.6 3 1.8"/>
+  </symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 9h11l1.3 10.5a1.5 1.5 0 0 1-1.5 1.7H6.7a1.5 1.5 0 0 1-1.5-1.7z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><path d="M9.5 13.5h5"/>
+  </symbol>
+  <symbol id="i-cave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 19.5 9.5 6l3 6 2-3.5 6.5 11z"/><path d="M14.5 19.5v-5.2a2 2 0 0 0-4 0v5.2"/>
+  </symbol>
+  <symbol id="i-sect" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.5 9 12 4l8.5 5"/><path d="M5.5 9h13"/><path d="M7 9.5V19m10-9.5V19"/><path d="M4 19.5h16"/><path d="M10 19.5v-4.7a2 2 0 0 1 4 0v4.7"/>
+  </symbol>
+  <symbol id="i-farm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 21v-8"/><path d="M12 13c-3.6 0-6-2.2-6-5.4C9.7 7.6 12 9.6 12 13Z"/><path d="M12 11c0-3.2 2.3-5.2 6-5.4 0 3.2-2.4 5.4-6 5.4Z"/><path d="M7 21h10"/>
+  </symbol>
+  <symbol id="i-dungeon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m3 18.5 5-9 3 5 2.5-4 7.5 8z"/><path d="M8 9.5 6.5 6 8.5 3l2 3z"/><path d="M3 21h18"/>
+  </symbol>
+  <symbol id="i-fate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.5c1.6 2.2 1.1 3.6 0 5.2-1.1-1.6-1.6-3 0-5.2Z"/><path d="M8.5 9.5h7l1.3 6.2a4.9 4.9 0 0 1-9.6 0z"/><path d="M8 13h8"/>
+  </symbol>
+  <symbol id="i-ascend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 18.5c-2.2 0-3.5-1.3-3.5-3S4.8 12.5 7 12.5h.4"/><path d="M8.5 12.5c.3-2 1.8-3.4 4-3.4 1.7 0 3 .8 3.7 2.1"/><path d="M16 14.5h1c1.9 0 3.2 1.1 3.2 2.7 0 1.6-1.3 2.8-3.2 2.8H7"/><path d="M12 4.5 14 7h-4z"/>
+  </symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M5 12h.01M12 12h.01M19 12h.01"/>
+  </symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/>
+  </symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7.5 4h9L21 9.5 12 20 3 9.5z"/><path d="M3 9.5h18M12 20 8.5 9.5 12 4l3.5 5.5z"/>
+  </symbol>
+  <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12.5 3.5c.4 3.2-1.4 4.6-2.7 6.2-1 1.2-1.8 2.5-1.8 4.2a4 4 0 0 0 8 0c0-1.3-.5-2.6-1.3-3.7-.5 1.1-1.1 1.7-1.9 2.1.6-3.2.5-6-.3-8.8Z"/>
+  </symbol>
+  <symbol id="i-floor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 19.5 9 8l3.5 7L15 11l6 8.5z"/><circle cx="17.5" cy="5.5" r="1.6"/>
+  </symbol>
+  <symbol id="i-weapon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19.5 3.5 10 13"/><path d="M14.5 3.5h6v6L11 19l-3-3z"/><path d="m6.5 14.5 3 3"/>
+  </symbol>
+  <symbol id="i-helmet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 16v-3a6 6 0 0 1 12 0v3"/><path d="M4.5 16h15"/><path d="M9 19h6"/><path d="M9 16v3m6-3v3"/><path d="M12 4V2.5"/>
+  </symbol>
+  <symbol id="i-robe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 4.5 12 6l4-1.5 3.5 3-1.7 3.5-1.8-.8V20H8v-9.8l-1.8.8L4.5 7.5z"/><path d="M12 6v14"/>
+  </symbol>
+  <symbol id="i-boots" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8.5 3.5h4V12c0 1.2.5 2 1.5 2.7l4 2.8c1 .7 1.5 1.4 1.5 2.5H5v-5h3.5z"/><path d="M5 20h14"/>
+  </symbol>
+  <symbol id="i-pendant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 4.5c2.5 0 4 1.5 6 4.5 2-3 3.5-4.5 6-4.5"/><circle cx="12" cy="14.5" r="4.2"/><path d="M12 12.5v4"/>
+  </symbol>
+  <symbol id="i-ring" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="14.5" r="5"/><path d="m9 8.5 1.5-4h3l1.5 4"/><path d="M10.5 4.5h3"/>
+  </symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="7.5"/><path d="M6.7 17.3c3-3 7.6-7.6 10.6-10.6"/><path d="M9 9c1.5 1.5 4.5 4.5 6 6"/>
+  </symbol>
+  <symbol id="i-herb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20V9"/><path d="M12 13c-3.4 0-5.8-2-6-5.2 3.4-.2 5.8 1.8 6 5.2Z"/><path d="M12 10.5c0-3 2.2-5 5.5-5.2.2 3-2 5.2-5.5 5.2Z"/><path d="M8 20h8"/>
+  </symbol>
+  <symbol id="i-ingot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 9c0-2.5 1.5-4 3.3-4h4.4C16 5 17.5 6.5 17.5 9"/><path d="M4 15.5c0-2.5 3.6-4.5 8-4.5s8 2 8 4.5S16.4 20 12 20s-8-2-8-4.5Z"/>
+  </symbol>
+  <symbol id="i-gourd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 3.5h4"/><path d="M10.5 5.5c0 1.2-.8 2-1.6 2.8-1.3 1.3-2.4 2.7-2.4 4.7a5.5 5.5 0 0 0 11 0c0-2-1.1-3.4-2.4-4.7-.8-.8-1.6-1.6-1.6-2.8z"/>
+  </symbol>
+  <symbol id="i-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8a2 2 0 0 1-2-2z"/><path d="M6 4a2 2 0 0 0-2 2v1h2"/><path d="M9 8.5h7M9 12h7M9 15.5h4"/>
+  </symbol>
+  <symbol id="i-cauldron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9h16"/><path d="M5.5 9c0 5 2.7 8.5 6.5 8.5s6.5-3.5 6.5-8.5"/><path d="M8 17.5 7 21m9-3.5 1 3.5"/><path d="M12 6.5c-.9-1.1-.4-2 .5-2.8"/>
+  </symbol>
+  <symbol id="i-hammer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m13 4 7 7-2.5 2.5-7-7z"/><path d="m11 7-7.5 8.5a1.8 1.8 0 0 0 2.5 2.5L15 10.5"/><path d="m4 19 1.5 1.5"/>
+  </symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/>
+  </symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M18.5 16.5c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3Z"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m5 12.5 4.5 4.5L19 6.5"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <path d="m6 6 12 12M18 6 6 18"/>
+  </symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m9 5 7 7-7 7"/>
+  </symbol>
+</svg>
 <div id="app" class="app" hidden>
   <!-- 顶栏 -->
   <header class="topbar">
     <div class="topbar-left">
-      <div class="avatar-box"><canvas id="avatarCanvas" width="48" height="48"></canvas></div>
+      <div class="avatar-box"><img id="avatarPortrait" src="assets/hd/player/swordsman-thumb.webp" alt=""></div>
       <div class="who">
         <div class="who-name"><span id="playerName">无名散修</span><span id="playerTitle" class="title"></span></div>
         <div class="who-realm"><span id="realmName">炼气期·初期</span><span id="levelText" class="dim">Lv.1</span></div>
@@ -40,10 +139,12 @@
     </div>
 
     <div class="topbar-right">
-      <div class="stat-chip" title="灵石"><img src="assets/game/ui/ui_xianxia_item_spirit_stone.png" alt=""><span id="stoneText">0</span></div>
-      <div class="stat-chip" title="战力"><span class="chip-label">战力</span><span id="powerText">0</span></div>
-      <div class="stat-chip" title="秘境层数"><span class="chip-label">秘境</span><span id="floorText">1层</span></div>
-      <button id="btnSettings" class="btn btn-ghost" title="设置">设置</button>
+      <div class="stat-chip" title="灵石"><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg><span id="stoneText">0</span></div>
+      <div class="stat-chip" title="战力"><svg class="ico chip-label-ico" aria-hidden="true"><use href="#i-power"/></svg><span class="chip-label">战力</span><span id="powerText">0</span></div>
+      <div class="stat-chip" title="秘境层数"><svg class="ico chip-label-ico" aria-hidden="true"><use href="#i-floor"/></svg><span class="chip-label">秘境</span><span id="floorText">1层</span></div>
+      <button id="btnSettings" class="btn btn-ghost btn-icon" title="设置" aria-label="设置">
+        <svg class="ico" aria-hidden="true"><use href="#i-settings"/></svg><span class="btn-label">设置</span>
+      </button>
     </div>
   </header>
 
@@ -60,6 +161,13 @@
               <div class="stage-overlay" id="stageOverlay"></div>
             </div>
             <div class="skillbar" id="skillBar"></div>
+            <div class="battle-report" id="battleReport">
+              <div class="report-head">
+                <span class="report-title">山中战报</span>
+                <span class="report-note">挂机中 · 且看剑光</span>
+              </div>
+              <div class="report-body" id="battleReportBody"></div>
+            </div>
           </section>
 
           <aside class="side side-right" id="rightPanel"></aside>

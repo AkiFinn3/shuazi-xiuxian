@@ -231,7 +231,7 @@ class Game {
     s.settings.speed = next;
     this.save();
     refreshSkillBar();
-    if (!silent) toast(`战斗速度 ×${next}`, '#6fd6b0');
+    if (!silent) toast(`战斗速度 ×${next}`, '#4e8a6c');
   }
 
   cycleSpeed() {
@@ -250,7 +250,7 @@ class Game {
     if (max > prev) {
       const condition = max === 2 ? '炼气圆满' : '筑基初期';
       this.log(`战斗速度 ×${max} 已解锁（${condition}）。`, 'l-good');
-      toast(`战斗速度 ×${max} 解锁`, '#e8c46a');
+      toast(`战斗速度 ×${max} 解锁`, '#a8803c');
     }
     this._lastMaxSpeed = max;
     if ((s.settings.speed || 1) > max) {
@@ -344,7 +344,7 @@ class Game {
       this.achTimer = 0;
       for (const a of checkAchievements(this.state)) {
         this.log(`成就达成【${a.name}】，称号「${a.title}」`, 'l-loot');
-        toast(`成就：${a.name} · ${a.title}`, '#e8c46a');
+        toast(`成就：${a.name} · ${a.title}`, '#a8803c');
         this.audio.fanfare();
         if (!this.state.title) this.state.title = a.title;
       }
@@ -359,7 +359,7 @@ class Game {
         countQuest(this.state, 'craft');
         this.state.stats.craft = (this.state.stats.craft || 0) + 1;
         this.log(`丹炉开盖：${pill.quality}${pill.name}。`, 'l-good');
-        toast(`炼成 ${pill.quality}${pill.name}`, '#6fd68a');
+        toast(`炼成 ${pill.quality}${pill.name}`, '#4e8a6c');
         this.audio.loot(2);
         this.state.alchemyLevel = (this.state.alchemyLevel || 1) + (job.qualityIndex === 3 ? 1 : 0.35);
       }
@@ -416,7 +416,7 @@ class Game {
       this.log(`境界突破！${realmLabel(s)}`, 'l-good');
       this.fx.addFlash('255,220,150', 0.6);
       this.audio.fanfare();
-      toast(`突破！${realmLabel(s)}`, '#e8c46a');
+      toast(`突破！${realmLabel(s)}`, '#a8803c');
     }
     if (res.tribulation) this.startTribulation(res.tribulation);
     if (res.blocked) {
@@ -445,7 +445,7 @@ class Game {
           this.log(`【${FATE_TYPES[s.fate.type].name}】进化为「${FATE_TIERS[r.tier - 1].name}」！`, 'l-loot');
           this.fx.addFlash('255,230,170', 0.5);
           this.audio.fanfare();
-          toast('本命法宝进化！', '#ffb347');
+          toast('本命法宝进化！', '#b7791f');
           markPanelsDirty('left');
         } else if (r.levelUp) {
           this.log(`器灵等级提升：Lv.${r.level}`, 'l-good');
@@ -582,7 +582,7 @@ class Game {
       markPanelsDirty('both');
       this.save();
       this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
-      toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
+      toast(`服用 ${pill.name}（${pill.quality}）`, '#4e8a6c');
       if (onConsume) onConsume();
     };
 
@@ -643,7 +643,7 @@ class Game {
           markPanelsDirty('both');
           this.save();
           this.log(`服下 ${pill.quality}${pill.name}。`, 'l-good');
-          toast(`服用 ${pill.name}（${pill.quality}）`, '#6fd68a');
+          toast(`服用 ${pill.name}（${pill.quality}）`, '#4e8a6c');
           if (onConsume) onConsume();
         };
       });
@@ -811,7 +811,7 @@ class Game {
         for (const lv of res.levels) this.log(`修为精进：${lv.label}`, 'l-good');
         if (res.realmUp) {
           this.log(`境界突破！${realmLabel(s)}`, 'l-good');
-          toast(`突破！${realmLabel(s)}`, '#e8c46a');
+          toast(`突破！${realmLabel(s)}`, '#a8803c');
         }
         if (res.blocked) {
           const need = REALMS[s.realm + 1] ? REALMS[s.realm + 1].need : 0;
@@ -858,7 +858,7 @@ class Game {
           <button class="btn btn-sm" id="btnImport">导入存档</button>
           <button class="btn btn-sm" id="btnReset">重开一世</button>
         </div>
-        <textarea id="saveBox" style="width:100%;height:90px;background:#0a0e15;color:var(--text);border:1px solid var(--line);font-family:inherit;font-size:11px" placeholder="存档码会显示在这里"></textarea>
+        <textarea id="saveBox" style="width:100%;height:90px;font-family:var(--font-sans);font-size:11px" placeholder="存档码会显示在这里"></textarea>
         <div class="row end mt8"><button class="btn btn-ghost" id="setClose">关闭</button></div>`;
 
       const bind = (id, key) => {
@@ -984,6 +984,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   window.__installPrompt = e;
   if (!localStorage.getItem('installHinted')) {
     localStorage.setItem('installHinted', '1');
-    toast('可以在浏览器菜单里「安装到主屏幕 / 添加到主屏幕」', '#6fd6b0');
+    toast('可以在浏览器菜单里「安装到主屏幕 / 添加到主屏幕」', '#4e8a6c');
   }
 });

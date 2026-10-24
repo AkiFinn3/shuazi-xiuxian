@@ -2,6 +2,7 @@
 import { realmLabel, expNeed, levelIndex } from '../game/state.js';
 import { CHAPTERS } from '../data/config.js';
 import { isMobile } from './mobile.js';
+import { playerPortrait } from './theme.js';
 
 const el = {};
 const last = {};
@@ -20,6 +21,8 @@ export function initHud(g) {
   el.stone = document.getElementById('stoneText');
   el.power = document.getElementById('powerText');
   el.floor = document.getElementById('floorText');
+  el.avatar = document.getElementById('avatarPortrait');
+  if (el.avatar) el.avatar.src = playerPortrait(game.state.appearance, true);
   refreshHud();
 }
 

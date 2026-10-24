@@ -3,27 +3,27 @@ export const ELEMENTS = ['metal', 'wood', 'water', 'fire', 'earth'];
 
 export const ELEMENT_META = {
   metal: {
-    name: '金', color: '#e8d98a', effect: '裂金',
+    name: '金', color: '#a8791f', effect: '裂金',
     desc: '命中时有几率追加一次金系伤害。',
     bonus: { atkPct: 4, crit: 2, critDmg: 6, pierce: 2 },
   },
   wood: {
-    name: '木', color: '#6fd68a', effect: '回春',
+    name: '木', color: '#3f7c5a', effect: '回春',
     desc: '周期性回复气血，击杀敌人额外回血。',
     bonus: { hpPct: 5, lifesteal: 1.5 },
   },
   water: {
-    name: '水', color: '#6fb8ff', effect: '寒霜',
+    name: '水', color: '#2f6fa3', effect: '寒霜',
     desc: '命中时有几率减速敌人。',
     bonus: { aspd: 0.06, defPct: 4 },
   },
   fire: {
-    name: '火', color: '#ff8a5c', effect: '灼烧',
+    name: '火', color: '#a94632', effect: '灼烧',
     desc: '命中时有几率点燃敌人，持续掉血。',
     bonus: { atkPct: 5 },
   },
   earth: {
-    name: '土', color: '#c9a46a', effect: '震地',
+    name: '土', color: '#8a6a3c', effect: '震地',
     desc: '命中时有几率眩晕敌人并获得护盾。',
     bonus: { hpPct: 6, defPct: 6 },
   },

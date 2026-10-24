@@ -4,12 +4,12 @@ export const VIEW = { w: 640, h: 360, ground: 300 };
 
 /* ---------------- 品质 ---------------- */
 export const RARITIES = [
-  { key: 'fan', name: '凡品', color: '#b9c0cc', affixes: 0, weight: 58, mult: 1.00 },
-  { key: 'ling', name: '灵品', color: '#6fd68a', affixes: 1, weight: 25, mult: 1.12 },
-  { key: 'xuan', name: '玄品', color: '#59a9ff', affixes: 2, weight: 10.5, mult: 1.26 },
-  { key: 'di', name: '地品', color: '#c08cff', affixes: 3, weight: 4.2, mult: 1.44 },
-  { key: 'tian', name: '天品', color: '#ffb347', affixes: 4, weight: 1.7, mult: 1.66 },
-  { key: 'xian', name: '仙品', color: '#ff5f6d', affixes: 5, weight: 0.6, mult: 1.95 },
+  { key: 'fan', name: '凡品', color: '#6E7A72', affixes: 0, weight: 58, mult: 1.00 },
+  { key: 'ling', name: '灵品', color: '#3F7C5A', affixes: 1, weight: 25, mult: 1.12 },
+  { key: 'xuan', name: '玄品', color: '#2F6FA3', affixes: 2, weight: 10.5, mult: 1.26 },
+  { key: 'di', name: '地品', color: '#7C4E9E', affixes: 3, weight: 4.2, mult: 1.44 },
+  { key: 'tian', name: '天品', color: '#B7791F', affixes: 4, weight: 1.7, mult: 1.66 },
+  { key: 'xian', name: '仙品', color: '#A93B49', affixes: 5, weight: 0.6, mult: 1.95 },
 ];
 
 /* ---------------- 部位 ---------------- */

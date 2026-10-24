@@ -1,7 +1,7 @@
 // 创角：道号、出身、形象
 import { ORIGINS, APPEARANCES } from '../data/config.js';
 import { openModal, closeModal, toast } from './modal.js';
-import { SPRITES } from '../data/sprites.js';
+import { playerPortrait } from './theme.js';
 import { nameReactions } from '../game/easter.js';
 
 const SUGGESTED = ['元始天尊', '李长寿', '韩跑跑', '隔壁老王', '无名氏', '道友请留步', '本人已闭关'];
@@ -20,7 +20,7 @@ export function openCreation(onDone) {
       <div class="creation">
         <div>
           <div class="preview">
-            <canvas id="cdPreview" width="120" height="150"></canvas>
+            <img id="cdPreview" src="${playerPortrait(appearance)}" alt="">
             <div class="nameplate" id="cdName">无名散修</div>
           </div>
           <div class="field mt8">
@@ -71,9 +71,10 @@ export function openCreation(onDone) {
         const el = document.createElement('div');
         el.className = 'app-pick' + (a.key === appearance ? ' on' : '');
         el.title = a.name;
-        const c = document.createElement('canvas');
-        c.width = 44; c.height = 52;
-        el.appendChild(c);
+        const img = document.createElement('img');
+        img.src = playerPortrait(a.key, true);
+        img.alt = a.name;
+        el.appendChild(img);
         el.onclick = () => {
           appearance = a.key;
           [...box2.children].forEach((x) => x.classList.remove('on'));
@@ -81,40 +82,16 @@ export function openCreation(onDone) {
           drawPreview();
         };
         box2.appendChild(el);
-        // 异步画预览
-        const meta = SPRITES.anims[`hero/${a.key}_idle`];
-        if (!meta) return;
-        const img = new Image();
-        img.onload = () => {
-          const ctx = c.getContext('2d');
-          ctx.imageSmoothingEnabled = false;
-          const [cw, ch] = meta.cell;
-          const scale = Math.min(44 / cw, 52 / ch);
-          const w = cw * scale, h = ch * scale;
-          ctx.drawImage(img, 0, 0, cw, ch, (44 - w) / 2, 52 - h, w, h);
-        };
-        img.src = meta.src;
       });
     }
 
     function drawPreview() {
-      const c = box.querySelector('#cdPreview');
-      const ctx = c.getContext('2d');
-      ctx.clearRect(0, 0, c.width, c.height);
-      const meta = SPRITES.anims[`hero/${appearance}_idle`];
+      const img = box.querySelector('#cdPreview');
       const nameEl = box.querySelector('#cdName');
       const input = box.querySelector('#cdNameInput');
       nameEl.textContent = input.value.trim() || '无名散修';
-      if (!meta) return;
-      const img = new Image();
-      img.onload = () => {
-        ctx.imageSmoothingEnabled = false;
-        const [cw, ch] = meta.cell;
-        const scale = Math.min(c.width / cw, (c.height - 10) / ch);
-        const w = cw * scale, h = ch * scale;
-        ctx.drawImage(img, 0, 0, cw, ch, (c.width - w) / 2, c.height - h - 4, w, h);
-      };
-      img.src = meta.src;
+      const src = playerPortrait(appearance);
+      if (img.getAttribute('src') !== src) img.src = src;
     }
 
     // 建议道号
@@ -153,7 +130,7 @@ export function openCreation(onDone) {
       }
       const reaction = nameReactions(name)[0];
       close();
-      if (reaction) toast(reaction, '#e8c46a');
+      if (reaction) toast(reaction, '#a8803c');
       onDone({ name, origin, appearance });
     }
 

@@ -1,30 +1,32 @@
-// 主界面导航：桌面侧栏；Task 5 追加移动底栏与更多弹层
+// 主界面导航：桌面侧栏、移动底栏与更多弹层
+import { icon } from './theme.js';
+
 export const NAV_ITEMS = [
-  { key: 'battle', label: '战斗', glyph: '战' },
-  { key: 'character', label: '角色', glyph: '角' },
-  { key: 'bag', label: '背包', glyph: '包' },
-  { key: 'cave', label: '洞府', glyph: '府' },
-  { key: 'sect', label: '宗门', glyph: '宗' },
-  { key: 'farm', label: '灵田', glyph: '田' },
-  { key: 'dungeon', label: '秘境', glyph: '秘' },
-  { key: 'fate', label: '法宝', glyph: '宝' },
-  { key: 'ascend', label: '仙缘', glyph: '缘' },
+  { key: 'battle', label: '战斗', icon: 'sword' },
+  { key: 'character', label: '角色', icon: 'character' },
+  { key: 'bag', label: '背包', icon: 'bag' },
+  { key: 'cave', label: '洞府', icon: 'cave' },
+  { key: 'sect', label: '宗门', icon: 'sect' },
+  { key: 'farm', label: '灵田', icon: 'farm' },
+  { key: 'dungeon', label: '秘境', icon: 'dungeon' },
+  { key: 'fate', label: '法宝', icon: 'fate' },
+  { key: 'ascend', label: '仙缘', icon: 'ascend' },
 ];
 
 const MOBILE_ITEMS = [
-  { key: 'battle', label: '战斗', glyph: '战' },
-  { key: 'character', label: '角色', glyph: '角' },
-  { key: 'bag', label: '背包', glyph: '包' },
-  { key: 'cave', label: '洞府', glyph: '府' },
-  { key: 'sect', label: '宗门', glyph: '宗' },
-  { key: 'more', label: '更多', glyph: '更' },
+  { key: 'battle', label: '战斗', icon: 'sword' },
+  { key: 'character', label: '角色', icon: 'character' },
+  { key: 'bag', label: '背包', icon: 'bag' },
+  { key: 'cave', label: '洞府', icon: 'cave' },
+  { key: 'sect', label: '宗门', icon: 'sect' },
+  { key: 'more', label: '更多', icon: 'more' },
 ];
 
 const MORE_ITEMS = [
-  { key: 'farm', label: '灵田', glyph: '田' },
-  { key: 'dungeon', label: '秘境', glyph: '秘' },
-  { key: 'fate', label: '法宝', glyph: '宝' },
-  { key: 'ascend', label: '仙缘', glyph: '缘' },
+  { key: 'farm', label: '灵田', icon: 'farm' },
+  { key: 'dungeon', label: '秘境', icon: 'dungeon' },
+  { key: 'fate', label: '法宝', icon: 'fate' },
+  { key: 'ascend', label: '仙缘', icon: 'ascend' },
 ];
 
 let gameRef = null;
@@ -38,7 +40,7 @@ export function initNav(game, onSelect) {
   if (!rail) return;
   rail.innerHTML = NAV_ITEMS.map((item) => `
     <button data-nav="${item.key}" title="${item.label}" aria-label="${item.label}">
-      <span class="ni">${item.glyph}</span>
+      <span class="ni">${icon(item.icon)}</span>
       <span class="nl">${item.label}</span>
     </button>`).join('');
   rail.querySelectorAll('[data-nav]').forEach((btn) => {
@@ -54,7 +56,7 @@ function renderMobileNav() {
   if (!nav) return;
   nav.innerHTML = MOBILE_ITEMS.map((item) => `
     <button data-mobile-nav="${item.key}" title="${item.label}" aria-label="${item.label}">
-      <span class="ni">${item.glyph}</span>
+      <span class="ni">${icon(item.icon)}</span>
       <span class="nl">${item.label}</span>
     </button>`).join('');
   nav.querySelectorAll('[data-mobile-nav]').forEach((btn) => {
@@ -77,11 +79,11 @@ function ensureMoreSheet() {
       <div class="more-grid">
         ${MORE_ITEMS.map((item) => `
           <button class="more-item" data-more="${item.key}">
-            <span class="ni">${item.glyph}</span>
+            <span class="ni">${icon(item.icon)}</span>
             <span class="nl">${item.label}</span>
           </button>`).join('')}
         <button class="more-item" data-more="settings">
-          <span class="ni">设</span>
+          <span class="ni">${icon('settings')}</span>
           <span class="nl">设置</span>
         </button>
       </div>

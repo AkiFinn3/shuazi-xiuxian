@@ -16,7 +16,7 @@ export const SKILLS = [
     unlockRealm: 1,
     cd: 13,
     desc: '8 秒内攻速 +60%，并造成 120% 攻击伤害',
-    color: '#6fd6b0',
+    color: '#4e8a6c',
   },
   {
     key: 'thunder',
@@ -25,7 +25,7 @@ export const SKILLS = [
     unlockRealm: 2,
     cd: 21,
     desc: '天雷降世，对最强者造成 600% 攻击伤害',
-    color: '#c08cff',
+    color: '#7c4e9e',
   },
 ];
 

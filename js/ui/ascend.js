@@ -5,48 +5,101 @@ import { openModal, closeModal, toast } from './modal.js';
 import { buildShareImage, downloadDataURL } from './share.js';
 import { exportSave } from '../game/save.js';
 import { realmLabel } from '../game/state.js';
+import { icon, isFullPage, pageHead, cardHead } from './theme.js';
 
 export function renderAscend(game, el) {
   const s = game.state;
+  const fullPage = isFullPage(el);
   const asc = s.ascend = s.ascend || { count: 0, points: 0, talents: {}, choice: null };
   const ready = canAscend(s);
   const req = ascendRequirement(s);
   const gain = ascendReward(s);
 
   const rows = talentRows(s).map((r) => `
-    <div class="kv" style="align-items:center">
-      <span>${r.talent.name} <span class="muted">${r.level}/${r.talent.max}</span><br>
-        <span class="muted" style="font-size:10px">${r.talent.desc}</span></span>
-      <span>${!r.available ? '<span class="muted">未解锁</span>'
-        : (r.level >= r.talent.max ? '<span class="jade">已满</span>'
+    <div class="talent-item">
+      <div class="talent-main">
+        <div class="talent-name">${r.talent.name}<span class="lv">${r.level}/${r.talent.max}</span></div>
+        <div class="talent-desc">${r.talent.desc}</div>
+      </div>
+      <span>${!r.available ? '<span class="muted small">未解锁</span>'
+        : (r.level >= r.talent.max ? '<span class="jade small">已满</span>'
         : `<button class="btn btn-sm ${r.can ? 'btn-jade' : ''}" data-talent="${r.talent.key}" ${r.can ? '' : 'disabled'}>${r.cost} 仙缘</button>`)}</span>
     </div>`).join('');
 
-  // 飞升榜（本地记录历代轮回）
   const board = s.board = s.board || [];
   const boardHtml = board.length
     ? board.map((b, i) => `<div class="kv"><span>第 ${i + 1} 世 · ${b.name}</span>
         <span>${b.realm} · ${b.power} 战力 · ${b.floor} 层</span></div>`).join('')
-    : '<div class="muted">还没有飞升记录。</div>';
+    : '<div class="empty-state">还没有飞升记录。这一世，才刚刚开始。</div>';
 
-  el.innerHTML = `
-    <div class="panel-title">仙缘</div>
-    <div class="kv"><span>飞升次数</span><span>${asc.count}</span></div>
-    <div class="kv"><span>可用仙缘</span><span class="gold">${asc.points}</span></div>
-    <div class="kv"><span>本次飞升可得</span><span>${gain} 仙缘</span></div>
-    ${ready ? '' : `<div class="kv"><span>飞升条件</span><span class="red">通关第 ${req.need} 层（当前 ${req.have}）</span></div>`}
+  const hero = `<div class="ascend-hero">
+    <div>
+      <div class="ascend-k">飞升次数</div>
+      <div class="ascend-v">${asc.count}</div>
+    </div>
+    <div>
+      <div class="ascend-k">可用仙缘</div>
+      <div class="ascend-v gold">${asc.points}</div>
+    </div>
+    <div>
+      <div class="ascend-k">本次可得</div>
+      <div class="ascend-v">${gain}</div>
+    </div>
+  </div>`;
+
+  const ascendCard = `<section class="card">
+    ${cardHead('飞升', ready ? '仙门已开' : '条件未满', 'ascend')}
+    ${ready ? '<div class="muted small">九天之上有仙路一条。此去经年，尘世境界与层数皆要重来，但仙缘会一直跟着你。</div>'
+      : `<div class="muted small">飞升条件：通关第 ${req.need} 层（当前 ${req.have}）。</div>`}
     <div class="row mt8">
       <button class="btn btn-gold" id="btnAscend" ${ready ? '' : 'disabled'}>${ready ? '飞升转生' : '尚未飞升'}</button>
     </div>
-    <div class="sub-title">仙缘天赋</div>
-    ${rows}
-    <div class="sub-title">飞升榜</div>
-    ${boardHtml}
-    <div class="row mt8">
-      <button class="btn btn-sm btn-jade" id="btnShare">生成分享图</button>
-      <button class="btn btn-sm" id="btnCopy">复制存档码</button>
-    </div>
-    <div class="muted mt8">转生会清空境界、层数与修为，装备与材料保留，仙缘永久生效。</div>`;
+  </section>`;
+
+  if (fullPage) {
+    el.innerHTML = `
+      ${pageHead({
+        kicker: 'ASCENSION · 仙缘',
+        title: '仙缘',
+        desc: '一世修行，一次飞升。带不走的留在人间，带得走的，写成下一世的仙缘。',
+      })}
+      ${hero}
+      <div class="split-grid">
+        ${ascendCard}
+        <section class="card">
+          ${cardHead('分享与存档', '', 'scroll')}
+          <div class="muted small">把这一世的境界与战力，做成一张可以留存的图。</div>
+          <div class="row mt8">
+            <button class="btn btn-sm btn-jade" id="btnShare">${icon('spark')}<span>生成分享图</span></button>
+            <button class="btn btn-sm" id="btnCopy">${icon('scroll')}<span>复制存档码</span></button>
+          </div>
+          <div class="divider"></div>
+          <div class="muted small">转生会清空境界、层数与修为，装备与材料保留，仙缘永久生效。</div>
+        </section>
+      </div>
+      <section class="card" style="margin-top:12px">
+        ${cardHead('仙缘天赋', `${asc.points} 点可用`, 'spark')}
+        <div class="talent-list">${rows}</div>
+      </section>
+      <section class="card" style="margin-top:12px">
+        ${cardHead('飞升榜', '近二十世', 'scroll')}
+        <div class="board-list">${boardHtml}</div>
+      </section>`;
+  } else {
+    el.innerHTML = `
+      <div class="panel-title">仙缘</div>
+      ${hero}
+      ${ascendCard}
+      <div class="sub-title">仙缘天赋</div>
+      <div class="talent-list">${rows}</div>
+      <div class="sub-title">飞升榜</div>
+      <div class="board-list">${boardHtml}</div>
+      <div class="row mt8">
+        <button class="btn btn-sm btn-jade" id="btnShare">生成分享图</button>
+        <button class="btn btn-sm" id="btnCopy">复制存档码</button>
+      </div>
+      <div class="muted small mt8">转生会清空境界、层数与修为，装备与材料保留，仙缘永久生效。</div>`;
+  }
 
   const btn = el.querySelector('#btnAscend');
   if (btn) btn.onclick = () => openAscendModal(game);
@@ -70,12 +123,12 @@ export function renderAscend(game, el) {
       try {
         const url = await buildShareImage(game, exportSave(s));
         downloadDataURL(url, `${s.name || '修士'}-修仙记录.png`);
-        toast('分享图已下载', '#6fd6b0');
+        toast('分享图已下载', '#4e8a6c');
       } catch (e) {
         toast('生成失败');
       }
       share.disabled = false;
-      share.textContent = '生成分享图';
+      share.innerHTML = `${icon('spark')}<span>生成分享图</span>`;
     };
   }
 
@@ -112,7 +165,7 @@ function openAscendModal(game) {
       go.className = 'btn btn-gold';
       go.style.display = 'block';
       go.style.width = '100%';
-      go.style.marginBottom = '6px';
+      go.style.marginBottom = '7px';
       go.textContent = '带她一起飞升（获得「同心」天赋）';
       go.onclick = () => finish(game, 'go');
       wrap.appendChild(go);
@@ -121,7 +174,7 @@ function openAscendModal(game) {
       stay.className = 'btn';
       stay.style.display = 'block';
       stay.style.width = '100%';
-      stay.style.marginBottom = '6px';
+      stay.style.marginBottom = '7px';
       stay.textContent = '留她镇守宗门（获得「镇宗」天赋）';
       stay.onclick = () => finish(game, 'stay');
       wrap.appendChild(stay);
@@ -164,5 +217,5 @@ function finish(game, choice) {
       box.querySelector('#ascOk').onclick = closeModal;
     }, { width: '520px' });
   }
-  toast(`飞升成功 · +${r.gain} 仙缘`, '#e8c46a');
+  toast(`飞升成功 · +${r.gain} 仙缘`, '#a8803c');
 }
