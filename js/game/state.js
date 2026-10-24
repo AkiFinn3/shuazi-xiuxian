@@ -2,8 +2,9 @@
 import { BALANCE, REALMS, ORIGINS, SLOTS, POWER_WEIGHT, STAT_LABEL } from '../data/config.js';
 import { FATE_TIERS } from './fate.js';
 import { TALENTS } from '../data/talents.js';
+import { rootBonus, isValidSpiritRoots } from './spirit_root.js';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export function createState({ name, origin, appearance }) {
   const originDef = ORIGINS.find((o) => o.key === origin) || ORIGINS[4];
@@ -34,6 +35,7 @@ export function createState({ name, origin, appearance }) {
     buffs: { atkUntil: 0, atkPct: 0, luckUntil: 0, luck: 0, tribResist: 0 },
     fate: { unlocked: false, type: null, tier: 1, level: 1, exp: 0, affixes: {} },
     ascend: { count: 0, points: 0, talents: {}, choice: null },
+    spiritRoots: null,
     settings: {
       autoBattle: true,
       autoEquip: true,
@@ -42,6 +44,7 @@ export function createState({ name, origin, appearance }) {
       autoAdvance: true,
       volume: 0.5,
       sound: true,
+      speed: 1,
     },
     stats: { kills: 0, bossKills: 0, drops: 0, salvaged: 0, deaths: 0, playtime: 0, stone: 0 },
     flags: {},
@@ -67,6 +70,10 @@ export function normalizeState(state) {
   state.equip = Object.assign(base.equip, state.equip || {});
   state.buffs = Object.assign(base.buffs, state.buffs || {});
   state.npcAffinity = state.npcAffinity || {};
+  state.v = SAVE_VERSION;
+  if (![1, 2, 3].includes(state.settings.speed)) state.settings.speed = 1;
+  state.settings.speed = Math.min(state.settings.speed, maxSpeed(state));
+  if (!isValidSpiritRoots(state.spiritRoots)) state.spiritRoots = null;
   // 清理失效的待渡劫状态，避免卡境界或跳劫
   if (state.pendingRealm != null
     && (state.stage !== 3 || state.pendingRealm !== state.realm + 1 || state.realm >= REALMS.length - 1)) {
@@ -97,6 +104,14 @@ export function realmLabel(state) {
 export function nextRealmFloor(state) {
   if (state.realm >= REALMS.length - 1) return null;
   return REALMS[state.realm + 1].need;
+}
+
+/** 当前境界允许的最高战斗速度 */
+export function maxSpeed(state) {
+  if (!state) return 1;
+  if (state.realm >= 1) return 3;
+  if (state.realm === 0 && state.stage >= 3) return 2;
+  return 1;
 }
 
 /** 结算最终属性 */
@@ -164,6 +179,19 @@ export function deriveStats(state) {
       const lv = asc.talents[t.key] || 0;
       if (lv > 0 && t.apply) t.apply(stats, lv);
     }
+  }
+
+  // 灵根：装备、法宝、天赋之后的加法/百分比加成，最终统一取整
+  if (isValidSpiritRoots(state.spiritRoots)) {
+    const root = rootBonus(state.spiritRoots);
+    if (root.atkPct) stats.atk *= 1 + root.atkPct / 100;
+    if (root.hpPct) stats.maxHp *= 1 + root.hpPct / 100;
+    if (root.defPct) stats.def *= 1 + root.defPct / 100;
+    stats.crit += root.crit;
+    stats.critDmg += root.critDmg;
+    stats.aspd += root.aspd;
+    stats.lifesteal += root.lifesteal;
+    stats.pierce += root.pierce;
   }
 
   stats.atk = Math.round(stats.atk * 10) / 10;

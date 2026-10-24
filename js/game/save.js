@@ -31,15 +31,16 @@ export function loadGame() {
 
 function migrate(data) {
   if (!data) return null;
-  // 目前只有 v1；后续版本在这里做字段补全
   data.v = SAVE_VERSION;
   data.settings = Object.assign({
     autoBattle: true, autoEquip: true, autoSalvage: true,
-    autoSalvageBelow: 'xuan', autoAdvance: true, volume: 0.5, sound: true,
+    autoSalvageBelow: 'xuan', autoAdvance: true,
+    volume: 0.5, sound: true, speed: 1,
   }, data.settings || {});
   data.stats = Object.assign({
     kills: 0, bossKills: 0, drops: 0, salvaged: 0, deaths: 0, playtime: 0, stone: 0,
   }, data.stats || {});
+  if (data.spiritRoots === undefined) data.spiritRoots = null;
   return data;
 }
 
