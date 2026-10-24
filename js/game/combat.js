@@ -3,7 +3,7 @@ import { VIEW, CHAPTERS, MOBS, BOSSES, BALANCE } from '../data/config.js';
 import { Anim } from '../engine/anim.js';
 import { drawScene } from './scene.js';
 import { SKILLS, isUnlocked } from './skills.js';
-import { getRootProcs, primaryElement } from './spirit_root.js';
+import { ELEMENT_META, getRootProcs, primaryElement } from './spirit_root.js';
 
 const WAVES_PER_FLOOR = 4;
 const HERO_X = 120;
@@ -694,6 +694,38 @@ export class Combat {
 
   _drawHero(ctx) {
     const hero = this.hero;
+    const pulse = this.game.lowFx ? 1 : 0.82 + 0.18 * Math.sin(this.clock * 3.2);
+
+    if (this.rootPrimary) {
+      const color = ELEMENT_META[this.rootPrimary].color;
+      ctx.save();
+      ctx.globalAlpha = (this.rootHeavenly ? 0.5 : 0.32) * pulse;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = this.rootHeavenly ? 2 : 1;
+      ctx.beginPath();
+      ctx.ellipse(hero.x, hero.y + 2, this.rootHeavenly ? 28 : 23, this.rootHeavenly ? 10 : 8, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      if (this.rootHeavenly) {
+        ctx.globalAlpha = 0.22 * pulse;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(hero.x, hero.y + 2, 30, 11, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    if (hero.shield > 0) {
+      ctx.save();
+      ctx.globalAlpha = 0.45 + 0.2 * pulse;
+      ctx.strokeStyle = '#f2d98a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(hero.x, hero.y + 1, 26, 9, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     this._drawShadow(ctx, hero.x, hero.y, 20);
     const anim = hero.state === 'attack' && hero.currentAnim ? hero.currentAnim
       : (hero.anims[hero.state] || hero.anims.idle);
@@ -711,6 +743,37 @@ export class Combat {
       flash: e.flash,
       scale: e.scale,
     });
+    if (!e.dead) {
+      if (this.clock < (e.slowUntil || 0)) {
+        ctx.save();
+        ctx.globalAlpha = 0.45;
+        ctx.strokeStyle = '#6fb8ff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.ellipse(e.x, e.y + 2, 18 * e.scale, 6 * e.scale, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+      if (e.burn) {
+        const r = 7 + Math.sin(this.clock * 12) * 2;
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#ff8a5c';
+        ctx.beginPath();
+        ctx.arc(e.x, e.y - 26 * e.scale, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      if (this.clock < (e.stunUntil || 0)) {
+        ctx.save();
+        ctx.fillStyle = '#f2d98a';
+        for (let i = 0; i < 3; i++) {
+          const a = this.clock * 4 + i * Math.PI * 2 / 3;
+          ctx.fillRect(e.x + Math.cos(a) * 14, e.y - 46 * e.scale + Math.sin(a) * 4, 2, 2);
+        }
+        ctx.restore();
+      }
+    }
     if (!e.dead && e.hp < e.maxHp) {
       const w = e.isBoss ? 46 : 30;
       const y = e.y - (e.isBoss ? 96 : 62 * e.scale);
