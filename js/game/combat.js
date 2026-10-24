@@ -3,6 +3,7 @@ import { VIEW, CHAPTERS, MOBS, BOSSES, BALANCE } from '../data/config.js';
 import { Anim } from '../engine/anim.js';
 import { drawScene } from './scene.js';
 import { SKILLS, isUnlocked } from './skills.js';
+import { getRootProcs, primaryElement } from './spirit_root.js';
 
 const WAVES_PER_FLOOR = 4;
 const HERO_X = 120;
@@ -20,6 +21,10 @@ export class Combat {
     this.boss = null;
     this.reviveTimer = 0;
     this.clock = 0;
+    this.rootProcs = [];
+    this.rootCd = {};
+    this.rootPrimary = null;
+    this.rootHeavenly = false;
     this.hero = {
       x: HERO_X,
       y: VIEW.ground,
@@ -32,9 +37,22 @@ export class Combat {
       combo: 0,
       anims: {},
       dead: false,
+      shield: 0,
+      shieldUntil: 0,
     };
     this._buildHeroAnims();
     this._buildSkills();
+    this.refreshRoots();
+  }
+
+  refreshRoots(roots = this.game.state.spiritRoots) {
+    this.rootProcs = getRootProcs(roots);
+    this.rootPrimary = primaryElement(roots);
+    this.rootHeavenly = !!(roots && roots.heavenly);
+    this.rootCd = {};
+    for (const p of this.rootProcs) {
+      if (p.kind === 'periodic') this.rootCd[p.elem] = p.cd;
+    }
   }
 
   _buildHeroAnims() {
@@ -73,7 +91,7 @@ export class Combat {
     } else if (s.key === 'fly') {
       const target = this._nearestEnemy();
       if (target) this._skillDamage(target, stats.atk * 1.2, s.color, false);
-      this.buff.aspdUntil = performance.now() / 1000 + 8;
+      this.buff.aspdUntil = this.clock + 8;
       this.buff.aspdMult = 1.6;
       g.log('御剑术：手中剑化作流光，攻速大增。', 'l-good');
     } else if (s.key === 'thunder') {
@@ -86,18 +104,118 @@ export class Combat {
     }
   }
 
-  _skillDamage(target, amount, color, big) {
-    const g = this.game;
-    const stats = g.stats;
-    let dmg = amount * (0.9 + Math.random() * 0.2);
+  _mitigateRaw(target, amount, drScale = 1) {
+    const stats = this.game.stats;
     const dr = target.defense / (target.defense + 60 + this.floor * 10);
-    dmg *= 1 - Math.max(0, dr - (stats.pierce || 0) / 1000);
-    dmg = Math.max(1, Math.round(dmg));
+    const effective = Math.max(0, dr - (stats.pierce || 0) / 1000) * drScale;
+    return Math.max(1, Math.round(amount * (1 - effective)));
+  }
+
+  _applyDamage(target, amount, opts = {}) {
+    if (!target || target.dead) return 0;
+    const dmg = Math.max(1, Math.round(amount));
     target.hp -= dmg;
     target.flash = 1;
-    g.fx.damage(target.x, target.y - 60, dmg, { crit: big, color: color || '#ffffff' });
+    const g = this.game;
+    g.fx.damage(target.x, target.y - (opts.yOff ?? 60), dmg, {
+      crit: !!opts.crit,
+      color: opts.color,
+      elem: !!opts.elem,
+    });
+    if (opts.hurt !== false) {
+      target.anim = target.anims.hurt;
+      target.anims.hurt.reset();
+      target.state = 'hurt';
+    }
+    if (target.hp <= 0) this._killEnemy(target);
+    return dmg;
+  }
+
+  _afterHeroDamage(target, damage) {
+    if (!target || target.dead || !this.rootProcs.length) return;
+    for (const proc of this.rootProcs) {
+      if (proc.kind !== 'hit') continue;
+      if ((this.rootCd[proc.elem] || 0) > 0) continue;
+      if (Math.random() * 100 >= proc.chance) continue;
+      this.rootCd[proc.elem] = proc.cd;
+      this._triggerRoot(proc, target, damage);
+      break;
+    }
+  }
+
+  _triggerRoot(proc, target, damage) {
+    const g = this.game;
+    const stats = g.stats;
+    if (proc.elem === 'metal') {
+      const final = this._mitigateRaw(target, damage * proc.dmgMult, 0.6);
+      this._applyDamage(target, final, { color: proc.color, elem: true, hurt: false });
+      g.fx.spark(target.x, target.y - 34, proc.color, 8, 90);
+      g.fx.damage(target.x, target.y - 76, 0, { text: '裂金', color: proc.color });
+      return;
+    }
+    if (proc.elem === 'water') {
+      const duration = proc.duration * (target.isBoss ? 0.5 : 1);
+      target.slowUntil = this.clock + duration;
+      target.slowPct = proc.slowPct;
+      g.fx.spark(target.x, target.y, proc.color, 10, 40);
+      g.fx.damage(target.x, target.y - 84, 0, { text: '寒霜', color: proc.color });
+      return;
+    }
+    if (proc.elem === 'fire') {
+      target.burn = {
+        until: this.clock + proc.duration,
+        nextTick: this.clock + 0.5,
+        dps: stats.atk * proc.dpsPct / 100,
+      };
+      g.fx.spark(target.x, target.y - 30, proc.color, 10, 50);
+      g.fx.damage(target.x, target.y - 84, 0, { text: '灼烧', color: proc.color });
+      return;
+    }
+    if (proc.elem === 'earth') {
+      const stun = proc.stun * (target.isBoss ? 0.5 : 1);
+      target.stunUntil = Math.max(target.stunUntil || 0, this.clock + stun);
+      const shield = stats.maxHp * proc.shieldPct / 100;
+      this.hero.shield = Math.max(this.hero.shield || 0, shield);
+      this.hero.shieldUntil = this.clock + proc.shieldDuration;
+      g.fx.spark(target.x, target.y, proc.color, 12, 60);
+      g.fx.spark(this.hero.x, this.hero.y - 30, '#f2d98a', 8, 50);
+      g.fx.damage(this.hero.x, this.hero.y - 86, 0, { text: '震地', color: proc.color });
+    }
+  }
+
+  _updateRoots(dt) {
+    for (const proc of this.rootProcs) {
+      if (proc.kind === 'hit') {
+        this.rootCd[proc.elem] = Math.max(0, (this.rootCd[proc.elem] || 0) - dt);
+      }
+    }
+    const wood = this.rootProcs.find((proc) => proc.kind === 'periodic');
+    if (wood) {
+      this.rootCd[wood.elem] = Math.max(0, (this.rootCd[wood.elem] || 0) - dt);
+      if (this.rootCd[wood.elem] <= 0 && this.game.state.hp > 0) {
+        const heal = this.game.stats.maxHp * wood.healPct / 100;
+        this.game.state.hp = Math.min(this.game.stats.maxHp, this.game.state.hp + heal);
+        this.hero.hp = this.game.state.hp;
+        this.rootCd[wood.elem] = wood.cd;
+        this.game.fx.damage(this.hero.x, this.hero.y - 86, 0, {
+          text: `回春 +${Math.round(heal)}`,
+          color: wood.color,
+        });
+        this.game.fx.spark(this.hero.x, this.hero.y - 30, wood.color, 8, 40);
+      }
+    }
+    if (this.hero.shield > 0 && this.clock >= this.hero.shieldUntil) {
+      this.hero.shield = 0;
+      this.hero.shieldUntil = 0;
+    }
+  }
+
+  _skillDamage(target, amount, color, big) {
+    const g = this.game;
+    const final = this._mitigateRaw(target, amount * (0.9 + Math.random() * 0.2));
+    const applied = this._applyDamage(target, final, { crit: big, color });
     g.fx.spark(target.x, target.y - 30, color || '#ffe0b0', big ? 14 : 6);
-    if (target.hp <= 0 && !target.dead) this._killEnemy(target);
+    this._afterHeroDamage(target, applied);
   }
 
   _updateSkills(dt) {
@@ -139,6 +257,8 @@ export class Combat {
       return;
     }
 
+    this._updateRoots(dt);
+
     // 回血（挂机友好）
     if (state.settings.autoBattle) {
       state.hp = Math.min(stats.maxHp, state.hp + stats.maxHp * 0.04 * dt);
@@ -176,6 +296,8 @@ export class Combat {
       this.hero.dead = false;
       this.hero.state = 'idle';
       this.hero.invuln = 2;   // 复活保护
+      this.hero.shield = 0;
+      this.hero.shieldUntil = 0;
       this.hero.anims.death.reset();
       this.enemies.length = 0;
       this.boss = null;
@@ -239,6 +361,10 @@ export class Combat {
       flash: 0,
       dead: false,
       isBoss: false,
+      slowUntil: 0,
+      slowPct: 0,
+      stunUntil: 0,
+      burn: null,
     });
   }
 
@@ -265,6 +391,7 @@ export class Combat {
       coin: def.coin * Math.pow(2.0, chapterIdx),
       speed: 22, scale: def.scale, facing: -1,
       attackCd: 1.6, hitTimer: 0, flash: 0, dead: false, isBoss: true,
+      slowUntil: 0, slowPct: 0, stunUntil: 0, burn: null,
     };
     this.enemies.push(boss);
     this.boss = boss;
@@ -303,7 +430,7 @@ export class Combat {
     } else {
       hero.state = 'attack';
       if (hero.attackCd <= 0) {
-        const buffed = performance.now() / 1000 < this.buff.aspdUntil ? this.buff.aspdMult : 1;
+        const buffed = this.clock < this.buff.aspdUntil ? this.buff.aspdMult : 1;
         hero.attackCd = 1 / Math.max(0.2, stats.aspd * buffed);
         hero.combo = (hero.combo + 1) % 3;
         const anim = hero.combo === 0 ? hero.anims.attack : hero.anims['combo' + hero.combo];
@@ -341,30 +468,19 @@ export class Combat {
     const variance = 0.9 + Math.random() * 0.2;
     let dmg = stats.atk * variance * (1 + (stats.elem || 0) / 100);
     if (crit) dmg *= 1 + stats.critDmg / 100;
-    // 减伤
-    const dr = target.defense / (target.defense + 60 + this.floor * 10);
-    dmg *= 1 - Math.max(0, dr - (stats.pierce || 0) / 1000);
-    dmg = Math.max(1, Math.round(dmg));
 
-    target.hp -= dmg;
-    target.flash = 1;
-    target.anim = target.anims.hurt;
-    target.anims.hurt.reset();
-    target.state = 'hurt';
-
-    g.fx.damage(target.x, target.y - target.def.scale * 60 - 8, dmg, { crit });
+    const applied = this._applyDamage(target, this._mitigateRaw(target, dmg), { crit });
     g.fx.spark(target.x, target.y - 30, crit ? '#ffd76a' : '#ffe0b0', crit ? 10 : 5);
     if (crit) {
       g.audio.crit();
       g.fx.addShake(3);
     }
-    // 吸血
     if (stats.lifesteal > 0) {
-      const heal = dmg * stats.lifesteal / 100;
+      const heal = applied * stats.lifesteal / 100;
       g.state.hp = Math.min(stats.maxHp, g.state.hp + heal);
+      hero.hp = g.state.hp;
     }
-
-    if (target.hp <= 0 && !target.dead) this._killEnemy(target);
+    this._afterHeroDamage(target, applied);
   }
 
   _nearestEnemy() {
@@ -383,7 +499,22 @@ export class Combat {
     enemy.state = 'dead';
     enemy.anim = enemy.anims.death;
     enemy.anims.death.reset();
+    enemy.slowUntil = 0;
+    enemy.stunUntil = 0;
+    enemy.burn = null;
+
     const g = this.game;
+    const wood = this.rootProcs.find((proc) => proc.kind === 'periodic');
+    if (wood && g.state.hp > 0) {
+      const heal = g.stats.maxHp * wood.killHealPct / 100;
+      g.state.hp = Math.min(g.stats.maxHp, g.state.hp + heal);
+      this.hero.hp = g.state.hp;
+      g.fx.damage(this.hero.x, this.hero.y - 86, 0, {
+        text: `回春 +${Math.round(heal)}`,
+        color: wood.color,
+      });
+    }
+
     g.fx.spark(enemy.x, enemy.y - 30, '#d8d0a0', 14, 90);
     if (enemy.isBoss) {
       g.fx.addShake(7);
@@ -397,16 +528,19 @@ export class Combat {
 
   /* ---------------- 敌人 ---------------- */
   _updateEnemies(dt, passive) {
-    const g = this.game;
-    const stats = g.stats;
     for (const e of this.enemies) {
       e.flash = Math.max(0, e.flash - dt * 4);
-      e.anim.update(dt);
+      this._updateEnemyBurn(e);
 
       if (e.dead) {
+        e.anim.update(dt);
         if (e.anim.done) e.remove = true;
         continue;
       }
+
+      const stunned = this.clock < (e.stunUntil || 0);
+      if (!stunned) e.anim.update(dt);
+
       if (e.state === 'hurt') {
         if (e.anim.done) {
           e.state = 'idle';
@@ -414,9 +548,10 @@ export class Combat {
         }
         continue;
       }
-      if (passive) continue;
+      if (passive || stunned) continue;
 
-      e.attackCd -= dt;
+      const slow = this.clock < (e.slowUntil || 0) ? 1 - (e.slowPct || 0) : 1;
+      e.attackCd -= dt * slow;
       const dx = this.hero.x - e.x;
       e.facing = dx >= 0 ? 1 : -1;
       const range = e.isBoss ? ENEMY_RANGE + 14 : ENEMY_RANGE;
@@ -424,7 +559,7 @@ export class Combat {
       if (Math.abs(dx) > range) {
         e.state = 'move';
         e.anim = e.anims.move;
-        e.x += Math.sign(dx) * e.speed * dt;
+        e.x += Math.sign(dx) * e.speed * slow * dt;
       } else {
         e.state = 'attack';
         if (e.attackCd <= 0) {
@@ -440,6 +575,23 @@ export class Combat {
     }
   }
 
+  _updateEnemyBurn(enemy) {
+    if (!enemy.burn) return;
+    if (this.clock >= enemy.burn.until) {
+      enemy.burn = null;
+      return;
+    }
+    if (this.clock >= enemy.burn.nextTick) {
+      enemy.burn.nextTick += 0.5;
+      this._applyDamage(enemy, enemy.burn.dps * 0.5, {
+        color: '#ff8a5c',
+        elem: true,
+        hurt: false,
+        yOff: 46,
+      });
+    }
+  }
+
   _enemyHit(enemy) {
     const g = this.game;
     const stats = g.stats;
@@ -448,9 +600,28 @@ export class Combat {
     const variance = 0.9 + Math.random() * 0.2;
     let dmg = enemy.atk * variance - stats.def * 0.62;
     dmg = Math.max(1, Math.round(dmg));
-    g.state.hp -= dmg;
+
+    if ((this.hero.shield || 0) > 0 && this.clock < this.hero.shieldUntil) {
+      const absorbed = Math.min(this.hero.shield, dmg);
+      this.hero.shield -= absorbed;
+      dmg -= absorbed;
+      g.fx.damage(this.hero.x, this.hero.y - 96, 0, {
+        text: `护盾 -${Math.round(absorbed)}`,
+        color: '#f2d98a',
+      });
+      if (this.hero.shield <= 0) {
+        this.hero.shield = 0;
+        this.hero.shieldUntil = 0;
+      }
+    } else {
+      this.hero.shield = 0;
+    }
+
+    if (dmg > 0) {
+      g.state.hp -= dmg;
+      g.fx.damage(this.hero.x, this.hero.y - 78, dmg, { color: '#ff8a80' });
+    }
     this.hero.flash = 1;
-    g.fx.damage(this.hero.x, this.hero.y - 78, dmg, { color: '#ff8a80' });
     g.fx.addShake(enemy.isBoss ? 4 : 2);
 
     if (g.state.hp <= 0) {
