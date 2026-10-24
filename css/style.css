@@ -519,6 +519,19 @@ img { image-rendering: pixelated; }
     padding: 0;
     gap: 0;
   }
+  .app-body {
+    display: block;
+    min-height: 0;
+    min-width: 0;
+  }
+  .nav-rail { display: none; }
+  .screen-root { height: 100%; }
+  .screen[data-screen="battle"] .main { height: 100%; }
+  .page-screen {
+    border: none;
+    border-radius: 0;
+    padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
+  }
 
   .main {
     display: flex;
@@ -548,26 +561,10 @@ img { image-rendering: pixelated; }
     z-index: 3;
     pointer-events: none;
   }
-  .skillbar .skill { pointer-events: auto; }
+  .skillbar .skill,
+  .skillbar .speed-btn { pointer-events: auto; }
 
-  /* 侧栏变成抽屉 */
-  .side {
-    display: none;
-    position: relative;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    border: none;
-    border-top: 1px solid var(--line);
-    border-radius: 0;
-    padding: 8px 8px calc(10px + env(safe-area-inset-bottom));
-  }
-  .side.mobile-active { display: block; }
-
-  /* 侧栏内部的页签被底部页签栏取代 */
-  .side .tabs { display: none; }
-  .side .panel-title { margin-top: 0; }
+  .side { display: none; }
 
   /* 顶栏压缩：名字与数值一行，修为/气血另起一行 */
   .topbar {
@@ -604,38 +601,54 @@ img { image-rendering: pixelated; }
     display: none;
   }
 
-  /* 底部页签栏 */
-  .tabbar {
-    display: flex;
+  /* 底部导航 */
+  .nav-mobile {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 2px;
     padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, rgba(16, 20, 30, .97), rgba(10, 13, 19, .99));
     border-top: 1px solid var(--line);
-    overflow-x: auto;
-    scrollbar-width: none;
   }
-  .tabbar::-webkit-scrollbar { display: none; }
-  .tabbar button {
-    flex: 1 0 auto;
-    min-width: 54px;
+  .nav-mobile button {
     min-height: 44px;
     border: 1px solid transparent;
     border-radius: 3px;
     background: transparent;
     color: var(--dim);
     font-family: inherit;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
     display: grid;
     place-items: center;
     gap: 1px;
   }
-  .tabbar button .ic { font-size: 15px; line-height: 1; }
-  .tabbar button.on {
+  .nav-mobile .ni { font-size: 16px; line-height: 1; }
+  .nav-mobile button.on {
     color: var(--gold);
     border-color: var(--line);
     background: rgba(111, 214, 176, .08);
   }
+
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .more-item {
+    min-height: 64px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #141926;
+    color: var(--text);
+    font-family: inherit;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    cursor: pointer;
+  }
+  .more-item .ni { color: var(--gold); font-size: 20px; }
+  .more-item .nl { font-size: 11px; color: var(--dim); }
 
   /* 触控目标放大 */
   .btn { min-height: 38px; padding: 6px 12px; }
@@ -643,6 +656,7 @@ img { image-rendering: pixelated; }
   .cell { min-height: 40px; }
   .slot { min-height: 44px; }
   .bag-grid { grid-template-columns: repeat(6, 1fr); }
+  .page-screen .bag-grid { grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); }
   .skill { width: 46px; height: 46px; }
   .modal-root { padding: 10px; }
   .modal { padding: 12px; width: 100%; max-height: calc(100dvh - 20px); }
@@ -688,34 +702,13 @@ img { image-rendering: pixelated; }
   }
   #game { object-fit: contain; }
 
-  .side {
-    position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: min(340px, 76vw);
-    flex: none;
-    z-index: 8;
-    background: rgba(12, 15, 22, .97);
-    border-left: 1px solid var(--line);
-    border-top: none;
-    transform: translateX(104%);
-    transition: transform .2s ease;
-    box-shadow: -12px 0 32px rgba(0, 0, 0, .5);
-    padding-top: calc(8px + env(safe-area-inset-top));
-    padding-bottom: calc(58px + env(safe-area-inset-bottom));
+  .nav-mobile {
+    padding-top: 2px;
+    padding-bottom: calc(2px + env(safe-area-inset-bottom));
   }
-  .side.mobile-active { display: block; }
+  .nav-mobile button { min-height: 40px; }
+  .nav-mobile .nl { font-size: 9px; }
 
-  .tabbar {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    z-index: 6;
-    background: linear-gradient(0deg, rgba(8, 11, 17, .95), rgba(8, 11, 17, .55));
-    border: none;
-    padding-bottom: calc(4px + env(safe-area-inset-bottom));
-  }
-  .tabbar button { min-height: 42px; }
-
-  /* 技能栏挂到顶栏下方，避开角色与底部页签栏 */
   .skillbar {
     position: absolute;
     top: calc(50px + env(safe-area-inset-top));
@@ -723,15 +716,6 @@ img { image-rendering: pixelated; }
     bottom: auto;
     padding: 0;
   }
-
-  .scrim {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(4, 6, 10, .55);
-    z-index: 5;
-  }
-  .scrim[hidden] { display: none; }
 }
 
 /* 竖屏提示 */

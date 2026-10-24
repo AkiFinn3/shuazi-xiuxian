@@ -37,7 +37,6 @@ const PAGES = {
 };
 
 const LIVE_PAGES = new Set(['character', 'cave', 'sect']);
-const PRIMARY_MOBILE = new Set(['battle', 'character', 'bag', 'cave', 'sect']);
 
 let game = null;
 let battleScreen = null;

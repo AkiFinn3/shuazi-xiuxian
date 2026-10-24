@@ -25,16 +25,16 @@
 <body>
 <div class="wrap">
   <div class="dev">
-    <h3>横屏 852 × 390（抽屉从右侧滑出）</h3>
+    <h3>横屏 852 × 390（底部导航）</h3>
     <div class="slot"><div class="frame land scaler"><iframe id="f1" src="../index.html"></iframe></div></div>
   </div>
   <div class="dev">
-    <h3>竖屏 393 × 852（页签内容在下方）</h3>
+    <h3>竖屏 393 × 852（底部导航 + 可滚动页面）</h3>
     <div class="slot port"><div class="frame port scaler"><iframe id="f2" src="../index.html"></iframe></div></div>
   </div>
   <div class="note">
     两台设备各自独立存档（不同 iframe 但同源 → 共享 localStorage，刷新后进度互通）。<br />
-    手机上打开时，会自动命中窄屏断点：战场在上，底部页签栏在拇指区，横屏时页签内容变成可收起的抽屉。
+    手机上打开时，会自动命中窄屏断点：战场在上，底部导航在拇指区；横屏时战场占满剩余高度。
   </div>
 </div>
 </body>
