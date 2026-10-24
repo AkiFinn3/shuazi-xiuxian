@@ -595,7 +595,7 @@ class Game {
     }
 
     let tribulation = null;
-    if (pill.effect.exp) {
+    if (pill.exp) {
       const res = addExp(s, pill.exp);
       for (const lv of res.levels) this.log(`修为精进：${lv.label}`, 'l-good');
       tribulation = res.tribulation;
