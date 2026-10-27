@@ -24,7 +24,7 @@ jobs:
           mkdir -p _site/assets
           cp index.html manifest.webmanifest sw.js LICENSE 署名与授权.txt _site/
           cp -r css js _site/
-          cp -r assets/game assets/icons assets/fonts _site/assets/
+          cp -r assets/game assets/hd assets/icons assets/fonts _site/assets/
           cp -r itch-assets _site/itch-assets
 
       - uses: actions/configure-pages@v5
