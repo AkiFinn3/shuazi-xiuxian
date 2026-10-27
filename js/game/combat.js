@@ -1,6 +1,6 @@
 // 战斗：自动战斗、波次、Boss、伤害结算
 import { VIEW, CHAPTERS, MOBS, BOSSES, BALANCE } from '../data/config.js';
-import { Anim } from '../engine/anim.js';
+import { ActorAnim } from '../engine/actor_art.js';
 import { drawScene } from './scene.js';
 import { SKILLS, isUnlocked } from './skills.js';
 import { ELEMENT_META, getRootProcs, primaryElement } from './spirit_root.js';
@@ -58,13 +58,13 @@ export class Combat {
   _buildHeroAnims() {
     const key = this.game.state.appearance;
     this.hero.anims = {
-      idle: new Anim(`hero/${key}_idle`),
-      walk: new Anim(`hero/${key}_walk`),
-      attack: new Anim(`hero/${key}_attack`),
-      combo1: new Anim(`hero/${key}_combo1`),
-      combo2: new Anim(`hero/${key}_combo2`),
-      hurt: new Anim(`hero/${key}_hurt`),
-      death: new Anim(`hero/${key}_death`),
+      idle: new ActorAnim(`hero/${key}_idle`),
+      walk: new ActorAnim(`hero/${key}_walk`),
+      attack: new ActorAnim(`hero/${key}_attack`),
+      combo1: new ActorAnim(`hero/${key}_combo1`),
+      combo2: new ActorAnim(`hero/${key}_combo2`),
+      hurt: new ActorAnim(`hero/${key}_hurt`),
+      death: new ActorAnim(`hero/${key}_death`),
     };
     this.hero.anims.dead = this.hero.anims.death;
   }
@@ -214,7 +214,8 @@ export class Combat {
     const g = this.game;
     const final = this._mitigateRaw(target, amount * (0.9 + Math.random() * 0.2));
     const applied = this._applyDamage(target, final, { crit: big, color });
-    g.fx.spark(target.x, target.y - 30, color || '#ffe0b0', big ? 14 : 6);
+    g.fx.spark(target.x, target.y - 30, color || '#f0dcb4', big ? 14 : 6);
+    g.fx.ring(target.x, target.y - 30, color || '#e6dcc2', big ? 30 : 20);
     this._afterHeroDamage(target, applied);
   }
 
@@ -337,13 +338,13 @@ export class Combat {
     const g = Math.pow(BALANCE.enemyHpGrowth, floor - 1);
     const aG = Math.pow(BALANCE.enemyAtkGrowth, floor - 1);
     const maxHp = Math.round(def.hp * g);
-    const x = VIEW.w - 30 - Math.random() * 90 + this.enemies.length * 46;
+    const x = Math.max(200, VIEW.w - 26 - this.enemies.length * 34 - Math.random() * 26);
     const anims = {
-      idle: new Anim(`mob/${type}_idle`),
-      move: new Anim(`mob/${type}_move`),
-      attack: new Anim(`mob/${type}_attack`),
-      hurt: new Anim(`mob/${type}_hurt`),
-      death: new Anim(`mob/${type}_death`),
+      idle: new ActorAnim(`mob/${type}_idle`),
+      move: new ActorAnim(`mob/${type}_move`),
+      attack: new ActorAnim(`mob/${type}_attack`),
+      hurt: new ActorAnim(`mob/${type}_hurt`),
+      death: new ActorAnim(`mob/${type}_death`),
     };
     this.enemies.push({
       type, def, anims, anim: anims.idle, state: 'idle',
@@ -375,11 +376,11 @@ export class Combat {
     const mult = Math.pow(1.85, chapterIdx);
     const maxHp = Math.round(def.hp * mult);
     const anims = {
-      idle: new Anim(`boss/${type}_idle`),
-      move: new Anim(`boss/${type}_move`),
-      attack: new Anim(`boss/${type}_attack_a`),
-      hurt: new Anim(`boss/${type}_hurt`),
-      death: new Anim(`boss/${type}_death`),
+      idle: new ActorAnim(`boss/${type}_idle`),
+      move: new ActorAnim(`boss/${type}_move`),
+      attack: new ActorAnim(`boss/${type}_attack_a`),
+      hurt: new ActorAnim(`boss/${type}_hurt`),
+      death: new ActorAnim(`boss/${type}_death`),
     };
     const boss = {
       type, def, anims, anim: anims.idle, state: 'idle',
@@ -470,7 +471,9 @@ export class Combat {
     if (crit) dmg *= 1 + stats.critDmg / 100;
 
     const applied = this._applyDamage(target, this._mitigateRaw(target, dmg), { crit });
-    g.fx.spark(target.x, target.y - 30, crit ? '#ffd76a' : '#ffe0b0', crit ? 10 : 5);
+    g.fx.slash(target.x, target.y - 36, crit ? '#f2d490' : '#f4e8cc');
+    g.fx.spark(target.x, target.y - 30, crit ? '#e8c06a' : '#f0dcb4', crit ? 10 : 5);
+    g.fx.ring(target.x, target.y - 30, crit ? '#e8c06a' : '#e6dcc2', crit ? 26 : 18);
     if (crit) {
       g.audio.crit();
       g.fx.addShake(3);
@@ -584,7 +587,7 @@ export class Combat {
     if (this.clock >= enemy.burn.nextTick) {
       enemy.burn.nextTick += 0.5;
       this._applyDamage(enemy, enemy.burn.dps * 0.5, {
-        color: '#ff8a5c',
+        color: '#e08a5c',
         elem: true,
         hurt: false,
         yOff: 46,
@@ -619,7 +622,7 @@ export class Combat {
 
     if (dmg > 0) {
       g.state.hp -= dmg;
-      g.fx.damage(this.hero.x, this.hero.y - 78, dmg, { color: '#ff8a80' });
+      g.fx.damage(this.hero.x, this.hero.y - 78, dmg, { color: '#e09088' });
     }
     this.hero.flash = 1;
     g.fx.addShake(enemy.isBoss ? 4 : 2);
@@ -668,8 +671,7 @@ export class Combat {
 
   /* ---------------- 绘制 ---------------- */
   draw(ctx) {
-    const chapter = CHAPTERS[this.chapterIndex() % CHAPTERS.length];
-    drawScene(ctx, this.chapterIndex(), this.scroll);
+    drawScene(ctx, this.chapterIndex(), this.scroll, this.clock, this.game.lowFx);
 
     // 敌人（按 y 排序）
     const list = this.enemies.slice().sort((a, b) => a.y - b.y);
@@ -737,6 +739,19 @@ export class Combat {
 
   _drawEnemy(ctx, e) {
     const anim = e.anim;
+    if (e.isBoss && !e.dead) {
+      const r = 54 * e.scale;
+      const aura = ctx.createRadialGradient(e.x, e.y, 4, e.x, e.y, r);
+      aura.addColorStop(0, 'rgba(198,150,104,.22)');
+      aura.addColorStop(0.6, 'rgba(120,84,70,.12)');
+      aura.addColorStop(1, 'rgba(120,84,70,0)');
+      ctx.save();
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.ellipse(e.x, e.y, r, r * 0.34, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
     this._drawShadow(ctx, e.x, e.y, 18 * e.scale);
     anim.draw(ctx, e.x, e.y, {
       flip: e.facing > 0,
@@ -747,7 +762,7 @@ export class Combat {
       if (this.clock < (e.slowUntil || 0)) {
         ctx.save();
         ctx.globalAlpha = 0.45;
-        ctx.strokeStyle = '#6fb8ff';
+        ctx.strokeStyle = '#7fa8b8';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.ellipse(e.x, e.y + 2, 18 * e.scale, 6 * e.scale, 0, 0, Math.PI * 2);
@@ -757,8 +772,8 @@ export class Combat {
       if (e.burn) {
         const r = 7 + Math.sin(this.clock * 12) * 2;
         ctx.save();
-        ctx.globalAlpha = 0.35;
-        ctx.fillStyle = '#ff8a5c';
+        ctx.globalAlpha = 0.32;
+        ctx.fillStyle = '#d98a5c';
         ctx.beginPath();
         ctx.arc(e.x, e.y - 26 * e.scale, r, 0, Math.PI * 2);
         ctx.fill();
@@ -766,44 +781,98 @@ export class Combat {
       }
       if (this.clock < (e.stunUntil || 0)) {
         ctx.save();
-        ctx.fillStyle = '#f2d98a';
+        ctx.fillStyle = '#e8cf92';
         for (let i = 0; i < 3; i++) {
           const a = this.clock * 4 + i * Math.PI * 2 / 3;
-          ctx.fillRect(e.x + Math.cos(a) * 14, e.y - 46 * e.scale + Math.sin(a) * 4, 2, 2);
+          ctx.beginPath();
+          ctx.arc(e.x + Math.cos(a) * 14, e.y - 46 * e.scale + Math.sin(a) * 4, 1.4, 0, Math.PI * 2);
+          ctx.fill();
         }
         ctx.restore();
       }
     }
-    if (!e.dead && e.hp < e.maxHp) {
-      const w = e.isBoss ? 46 : 30;
-      const y = e.y - (e.isBoss ? 96 : 62 * e.scale);
-      ctx.fillStyle = 'rgba(0,0,0,.65)';
-      ctx.fillRect(e.x - w / 2 - 1, y - 1, w + 2, 6);
-      ctx.fillStyle = '#e0574f';
-      ctx.fillRect(e.x - w / 2, y, w * Math.max(0, e.hp / e.maxHp), 4);
+    if (!e.dead && !e.isBoss && e.hp < e.maxHp) {
+      const w = 30;
+      const y = e.y - 62 * e.scale;
+      const pct = Math.max(0, e.hp / e.maxHp);
+      this._roundRect(ctx, e.x - w / 2, y, w, 3, 1.5);
+      ctx.fillStyle = 'rgba(20,32,27,.62)';
+      ctx.fill();
+      ctx.save();
+      this._roundRect(ctx, e.x - w / 2, y, Math.max(2, w * pct), 3, 1.5);
+      ctx.fillStyle = pct > 0.35 ? '#7fae86' : '#cf8a6e';
+      ctx.fill();
+      ctx.restore();
     }
+  }
+
+  _roundRect(ctx, x, y, w, h, r) {
+    const rr = Math.min(r, h / 2, w / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rr, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rr);
+    ctx.arcTo(x + w, y + h, x, y + h, rr);
+    ctx.arcTo(x, y + h, x, y, rr);
+    ctx.arcTo(x, y, x + w, y, rr);
+    ctx.closePath();
   }
 
   _drawBossBar(ctx) {
     const b = this.boss;
-    const w = 320;
+    const w = 300;
     const x = (VIEW.w - w) / 2;
     // 横屏顶栏浮在画布上，Boss 血条下移让出位置
     const mobileLandscape = matchMedia('(max-height: 560px) and (orientation: landscape)').matches;
-    const y = mobileLandscape ? 56 : 14;
+    const y = mobileLandscape ? 54 : 12;
+    const pct = Math.max(0, b.hp / b.maxHp);
+
     ctx.save();
-    ctx.fillStyle = 'rgba(6,8,12,.78)';
-    ctx.fillRect(x - 3, y - 3, w + 6, 18);
-    ctx.strokeStyle = '#3b4763';
-    ctx.strokeRect(x - 3.5, y - 3.5, w + 7, 19);
-    ctx.fillStyle = '#8a2f2c';
-    ctx.fillRect(x, y, w * Math.max(0, b.hp / b.maxHp), 12);
-    ctx.fillStyle = '#e0574f';
-    ctx.fillRect(x, y, w * Math.max(0, b.hp / b.maxHp), 6);
-    ctx.fillStyle = '#e6ecf5';
-    ctx.font = '12px FusionPixel, monospace';
+    this._roundRect(ctx, x - 10, y - 8, w + 20, 32, 8);
+    ctx.fillStyle = 'rgba(18,30,26,.74)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(236,226,200,.26)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
     ctx.textAlign = 'center';
-    ctx.fillText(`${b.def.name}  ${Math.ceil(b.hp)}/${b.maxHp}`, VIEW.w / 2, y + 11);
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = '600 12px "Noto Serif SC", serif';
+    ctx.fillStyle = '#efe7d3';
+    ctx.fillText(b.def.name, VIEW.w / 2, y + 3);
+
+    ctx.textAlign = 'right';
+    ctx.font = '10px "Noto Serif SC", serif';
+    ctx.fillStyle = 'rgba(239,231,211,.62)';
+    ctx.fillText(`${Math.ceil(b.hp)} / ${b.maxHp}`, x + w, y + 3);
+
+    this._roundRect(ctx, x, y + 9, w, 7, 3.5);
+    ctx.fillStyle = 'rgba(10,18,15,.72)';
+    ctx.fill();
+
+    if (pct > 0) {
+      const fill = ctx.createLinearGradient(x, 0, x + w, 0);
+      fill.addColorStop(0, '#a84b43');
+      fill.addColorStop(0.55, '#c2685a');
+      fill.addColorStop(1, '#d99873');
+      ctx.save();
+      this._roundRect(ctx, x, y + 9, Math.max(2, w * pct), 7, 3.5);
+      ctx.clip();
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y + 9, w * pct, 7);
+      ctx.fillStyle = 'rgba(255,244,224,.28)';
+      ctx.fillRect(x, y + 9, w * pct, 2);
+      ctx.restore();
+    }
+
+    // 剑纹分隔与两端金角
+    ctx.strokeStyle = 'rgba(232,207,146,.4)';
+    ctx.lineWidth = 1;
+    for (const sx of [x - 3, x + w + 3]) {
+      ctx.beginPath();
+      ctx.moveTo(sx, y + 7);
+      ctx.lineTo(sx, y + 18);
+      ctx.stroke();
+    }
     ctx.restore();
   }
 }

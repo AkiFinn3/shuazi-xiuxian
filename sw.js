@@ -1,5 +1,5 @@
 /* Service Worker：让游戏可以「添加到主屏幕」并离线玩 */
-const VERSION = 'shuazi-xiuxian-v4';
+const VERSION = 'shuazi-xiuxian-v5';
 const CORE = [
   './',
   './index.html',
@@ -13,6 +13,10 @@ const CORE = [
   './js/ui/nav.js',
   './js/ui/roots.js',
   './js/ui/farm.js',
+  './js/engine/actor_art.js',
+  './js/engine/fx.js',
+  './js/game/scene.js',
+  './js/game/combat.js',
   './assets/fonts/noto-serif-sc-regular.woff2',
   './assets/fonts/noto-serif-sc-semibold.woff2',
   './assets/hd/landscape-qinglu.webp',

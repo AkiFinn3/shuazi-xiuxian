@@ -30,8 +30,7 @@ import { buildSkillBar, refreshSkillBar } from './ui/skills.js';
 import { openRootTest } from './ui/roots.js';
 import { logLine } from './ui/log.js';
 import { DEATH_QUIPS, QUIPS } from './data/names.js';
-import { preload, preloadAnim } from './engine/assets.js';
-import { sceneAssetKeys } from './game/scene.js';
+import { preloadBattleArt } from './engine/actor_art.js';
 
 class Game {
   constructor() {
@@ -43,7 +42,8 @@ class Game {
     this.combat = null;
     this.canvas = document.getElementById('game');
     this.ctx = this.canvas.getContext('2d');
-    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
     this.saveTimer = 0;
     this.hudTimer = 0;
     this.quipTimer = 0;
@@ -112,17 +112,7 @@ class Game {
   /** 预载当前章节的场景、主角与妖兽资源 */
   preloadForFloor(floor) {
     const chapterIndex = Math.floor((floor - 1) / 10) % CHAPTERS.length;
-    const chapter = CHAPTERS[chapterIndex];
-    preload(sceneAssetKeys(chapterIndex));
-    const anims = [];
-    for (const type of chapter.mobs || []) {
-      for (const a of ['idle', 'move', 'attack', 'hurt', 'death']) anims.push(`mob/${type}_${a}`);
-    }
-    for (const a of ['idle', 'move', 'attack_a', 'hurt', 'death']) anims.push(`boss/${chapter.boss}_${a}`);
-    for (const a of ['idle', 'walk', 'attack', 'combo1', 'combo2', 'combo3', 'cast', 'hurt', 'death', 'dash']) {
-      anims.push(`hero/${this.state.appearance}_${a}`);
-    }
-    preloadAnim(anims);
+    preloadBattleArt(this.state.appearance, CHAPTERS[chapterIndex]);
   }
 
   bindUi() {
